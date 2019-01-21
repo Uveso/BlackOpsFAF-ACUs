@@ -302,10 +302,10 @@ UnitBlueprint {
         },
     },
     Economy = {
-        BuildCostEnergy = 5000000,
-        BuildCostMass = 18000,
+        BuildCostEnergy = 350000,
+        BuildCostMass = 2500,
         BuildRate = 10,
-        BuildTime = 60000,
+        BuildTime = 18000,
         BuildableCategory = {
             'BUILTBYCOMMANDER AEON',
             'BUILTBYTIER2COMMANDER AEON',
