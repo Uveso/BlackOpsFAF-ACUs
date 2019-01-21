@@ -76,7 +76,7 @@ UnitBlueprint {
         },
         StartCapture = Sound {
             Bank = 'XSL',
-            Cue = 'XSL0001_Capture_Start',
+            Cue = 'XSL0105_Capture_Start',
             LodCutoff = 'UnitMove_LodCutoff',
         },
         StartMove = Sound {
@@ -1740,11 +1740,11 @@ UnitBlueprint {
             MuzzleSalvoSize = 1,
             MuzzleVelocity = 25,
             Overcharge = {
-                energyMult = 0.9,       -- for old game version. 
-                commandDamage = 400,    -- for old game version. 
-                structureDamage = 800,  -- for old game version. 
-                maxDamage = 15000,      -- for old game version. 
-                minDamage = 1500,       -- for old game version. 
+                energyMult = 0.9,       -- for old game version.
+                commandDamage = 400,    -- for old game version.
+                structureDamage = 800,  -- for old game version.
+                maxDamage = 15000,      -- for old game version.
+                minDamage = 1500,       -- for old game version.
                 BaseDamage = 1000,
                 BaseEnergy = 500,
                 DamagePerCharge = 1000,
@@ -1823,11 +1823,11 @@ UnitBlueprint {
             MuzzleSalvoSize = 1,
             MuzzleVelocity = 25,
             Overcharge = {
-                energyMult = 0.9,       -- for old game version. 
-                commandDamage = 400,    -- for old game version. 
-                structureDamage = 800,  -- for old game version. 
-                maxDamage = 15000,      -- for old game version. 
-                minDamage = 1500,       -- for old game version. 
+                energyMult = 0.9,       -- for old game version.
+                commandDamage = 400,    -- for old game version.
+                structureDamage = 800,  -- for old game version.
+                maxDamage = 15000,      -- for old game version.
+                minDamage = 1500,       -- for old game version.
                 BaseDamage = 1000,
                 BaseEnergy = 500,
                 DamagePerCharge = 1000,
@@ -1889,7 +1889,7 @@ UnitBlueprint {
             Damage = 0,
             DamageFriendly = true,
             DamageRadius = 0,
-            DamageType = 'Normal',
+            DamageType = 'Nuke',
             DisplayName = 'Death Nuke',
             FireOnDeath = true,
             FiringTolerance = 2,
