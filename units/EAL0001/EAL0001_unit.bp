@@ -1434,9 +1434,9 @@ UnitBlueprint {
         UnitWeight = 1,
     },
     Intel = {
-        OmniRadius = 26,
-        VisionRadius = 26,
-        WaterVisionRadius = 26,
+        OmniRadius = 28,
+        VisionRadius = 28,
+        WaterVisionRadius = 28,
         RemoteViewingRadius = 20,
     },
     Interface = {

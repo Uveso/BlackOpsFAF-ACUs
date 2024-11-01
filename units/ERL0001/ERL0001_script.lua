@@ -1081,8 +1081,8 @@ ERL0001 = Class(ACUUnit) {
         },    
     },
 
-    OnIntelEnabled = function(self)
-        ACUUnit.OnIntelEnabled(self)
+    OnIntelEnabled = function(self, intel)
+        ACUUnit.OnIntelEnabled(self, intel)
         if self:HasEnhancement('CloakingSubsystems') and self:IsIntelEnabled('Cloak') then
             self:SetEnergyMaintenanceConsumptionOverride(self:GetBlueprint().Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
             self:SetMaintenanceConsumptionActive()
@@ -1100,8 +1100,8 @@ ERL0001 = Class(ACUUnit) {
         end
     end,
 
-    OnIntelDisabled = function(self)
-        ACUUnit.OnIntelDisabled(self)
+    OnIntelDisabled = function(self, intel)
+        ACUUnit.OnIntelDisabled(self, intel)
         if self.IntelEffectsBag then
             EffectUtil.CleanupEffectBag(self,'IntelEffectsBag')
             self.IntelEffectsBag = nil

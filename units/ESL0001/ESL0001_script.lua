@@ -235,8 +235,8 @@ ESL0001 = Class(ACUUnit) {
         ACUUnit.OnMotionHorzEventChange(self, new, old)
     end,
 
-    OnIntelEnabled = function(self)
-        ACUUnit.OnIntelEnabled(self)
+    OnIntelEnabled = function(self, intel)
+        ACUUnit.OnIntelEnabled(self, intel)
         if self:HasEnhancement('CloakingSubsystems') and self.HiddenACU then
             self:SetEnergyMaintenanceConsumptionOverride(self:GetBlueprint().Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
             self:SetMaintenanceConsumptionActive()
@@ -247,8 +247,8 @@ ESL0001 = Class(ACUUnit) {
         end
     end,
 
-    OnIntelDisabled = function(self)
-        ACUUnit.OnIntelDisabled(self)
+    OnIntelDisabled = function(self, intel)
+        ACUUnit.OnIntelDisabled(self, intel)
         if self.IntelEffectsBag then
             EffectUtil.CleanupEffectBag(self,'IntelEffectsBag')
             self.IntelEffectsBag = nil

@@ -1511,12 +1511,12 @@ UnitBlueprint {
     Intel = {
         Cloak = true,
         FreeIntel = false,
-        OmniRadius = 26,
+        OmniRadius = 28,
         RadarStealth = true,
         ReactivateTime = 2,
         SonarStealth = true,
         VisionRadius = 26,
-        WaterVisionRadius = 26,
+        WaterVisionRadius = 28,
     },
     Interface = {
         HelpText = '<LOC xsl0001_help>Armored Command Unit',

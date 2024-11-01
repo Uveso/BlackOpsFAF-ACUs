@@ -1,6 +1,6 @@
 name = "BlackOps FAF: ACUs"
-uid = "9e8ea941-c306-4751-b367-a00000019000"
-version = 19
+uid = "9e8ea941-c306-4751-b367-a00000020000"
+version = 20
 copyright = "2009 Exavier Macbeth, lt_hawkeye, orangeknight, IceDreamer"
 description = "The ultimate ACU upgrade pack, re-engineered for FAF 3680 or later"
 author = "Exavier Macbeth, lt_hawkeye, orangeknight - Revamped 2016 by IceDreamer"

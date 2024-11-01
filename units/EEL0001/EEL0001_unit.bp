@@ -1588,9 +1588,9 @@ UnitBlueprint {
     },
     Intel = {
         FreeIntel = true,
-        OmniRadius = 26,
+        OmniRadius = 28,
         VisionRadius = 26,
-        WaterVisionRadius = 26,
+        WaterVisionRadius = 28,
     },
     Interface = {
         HelpText = '<LOC uel0001_help>Armored Command Unit',
