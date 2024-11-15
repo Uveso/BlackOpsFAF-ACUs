@@ -2,7 +2,7 @@
 -- File     : /cdimage/lua/BlackOpsprojectiles.lua
 -- Author(s): Lt_Hawkeye
 -- Summary  :
--- Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
 
 local Projectile = import('/lua/sim/projectile.lua').Projectile
@@ -15,8 +15,10 @@ local EffectTemplate = import('/lua/EffectTemplates.lua')
 local util = import('/lua/utilities.lua')
 local ACUsEffectTemplate = import('/mods/BlackOpsFAF-ACUs/lua/ACUsEffectTemplates.lua')
 
+---@class NullShell : Projectile
 NullShell = Class(Projectile) {}
 
+---@class EmitterProjectile : Projectile
 EmitterProjectile = Class(Projectile) {
     FxTrails = {'/effects/emitters/missile_munition_trail_01_emit.bp',},
     FxTrailScale = 1,
@@ -32,6 +34,7 @@ EmitterProjectile = Class(Projectile) {
     end,
 }
 
+---@class SinglePolyTrailProjectile : EmitterProjectile
 SinglePolyTrailProjectile = Class(EmitterProjectile) {
     PolyTrail = '/effects/emitters/test_missile_trail_emit.bp',
     PolyTrailOffset = 0,
@@ -45,11 +48,13 @@ SinglePolyTrailProjectile = Class(EmitterProjectile) {
     end,
 }
 
+---@class MultiPolyTrailProjectile : EmitterProjectile
 MultiPolyTrailProjectile = Class(EmitterProjectile) {
     PolyTrailOffset = {0},
     FxTrails = {},
     RandomPolyTrails = 0, -- Count of how many are selected randomly for PolyTrail table
 
+    ---@param self MultiPolyTrailProjectile
     OnCreate = function(self)
         EmitterProjectile.OnCreate(self)
         if self.PolyTrails then
@@ -75,12 +80,14 @@ MultiPolyTrailProjectile = Class(EmitterProjectile) {
 -- That combine beams, polytrails, and normal emitters
 
 -- Heavyweight version allowing multiple beams, polytrails, and standard emitters
+---@class MultiCompositeEmitterProjectile : MultiPolyTrailProjectile
 MultiCompositeEmitterProjectile = Class(MultiPolyTrailProjectile) {
     Beams = {'/effects/emitters/default_beam_01_emit.bp',},
     PolyTrailOffset = {0},
     RandomPolyTrails = 0, -- Count of how many are selected randomly for PolyTrail table
     FxTrails = {},
 
+    ---@param self MultiCompositeEmitterProjectile
     OnCreate = function(self)
         MultiPolyTrailProjectile.OnCreate(self)
         local beam = nil
@@ -92,6 +99,7 @@ MultiCompositeEmitterProjectile = Class(MultiPolyTrailProjectile) {
 }
 
 --  UEF ACU Flame Thrower
+---@class FlameThrowerProjectile01 : EmitterProjectile
 FlameThrowerProjectile01 = Class(EmitterProjectile) {
     FxTrails = {'/mods/BlackOpsFAF-ACUs/Effects/Emitters/NapalmTrailFX.bp',},
     FxTrailScale = 0.75,
@@ -113,6 +121,7 @@ FlameThrowerProjectile01 = Class(EmitterProjectile) {
 }
 
 --  UEF ACU Antimatter Cannon
+---@class UEFACUAntiMatterProjectile01 : MultiCompositeEmitterProjectile
 UEFACUAntiMatterProjectile01 = Class(MultiCompositeEmitterProjectile) {
     FxTrails = ACUsEffectTemplate.ACUAntiMatterFx,
     PolyTrail = ACUsEffectTemplate.ACUAntiMatterPoly,
@@ -132,8 +141,11 @@ UEFACUAntiMatterProjectile01 = Class(MultiCompositeEmitterProjectile) {
     FxWaterHitScale = 0.5,
     FxShieldHitScale = 0.5,
 
+    ---@param self UEFACUAntiMatterProjectile01
+    ---@param targetType string
+    ---@param targetEntity Unit
     OnImpact = function(self, targetType, targetEntity)
-        local army = self:GetArmy()
+        local army = self.Army
         if targetType == 'Terrain' then
             CreateDecal(self:GetPosition(), util.GetRandomFloat(0.0,6.28), 'nuke_scorch_001_normals', '', 'Alpha Normals', self.FxSplatScale, self.FxSplatScale, 150, 30, army)
             CreateDecal(self:GetPosition(), util.GetRandomFloat(0.0,6.28), 'nuke_scorch_002_albedo', '', 'Albedo', self.FxSplatScale * 2, self.FxSplatScale * 2, 150, 30, army)
@@ -146,6 +158,7 @@ UEFACUAntiMatterProjectile01 = Class(MultiCompositeEmitterProjectile) {
     end,
 }
 
+---@class UEFACUAnitMatterProjectile02 : MultiCompositeEmitterProjectile
 UEFACUAntiMatterProjectile02 = Class(MultiCompositeEmitterProjectile) {
     FxTrails = ACUsEffectTemplate.ACUAntiMatterFx,
     PolyTrail = ACUsEffectTemplate.ACUAntiMatterPoly,
@@ -165,8 +178,11 @@ UEFACUAntiMatterProjectile02 = Class(MultiCompositeEmitterProjectile) {
     FxWaterHitScale = 0.7,
     FxShieldHitScale = 0.7,
 
+    ---@param self UEFACUAntiMatterProjectile02
+    ---@param targetType string
+    ---@param targetEntity Unit
     OnImpact = function(self, targetType, targetEntity)
-        local army = self:GetArmy()
+        local army = self.Army
         if targetType == 'Terrain' then
             CreateDecal(self:GetPosition(), util.GetRandomFloat(0.0,6.28), 'nuke_scorch_001_normals', '', 'Alpha Normals', self.FxSplatScale, self.FxSplatScale, 150, 30, army)
             CreateDecal(self:GetPosition(), util.GetRandomFloat(0.0,6.28), 'nuke_scorch_002_albedo', '', 'Albedo', self.FxSplatScale * 2, self.FxSplatScale * 2, 150, 30, army)
@@ -180,6 +196,7 @@ UEFACUAntiMatterProjectile02 = Class(MultiCompositeEmitterProjectile) {
     end,
 }
 
+---@class UEFACUAntiMatterProjectile03 : MultiCompositeEmitterProjectile
 UEFACUAntiMatterProjectile03 = Class(MultiCompositeEmitterProjectile) {
     FxTrails = ACUsEffectTemplate.ACUAntiMatterFx,
     PolyTrail = ACUsEffectTemplate.ACUAntiMatterPoly,
@@ -215,6 +232,7 @@ UEFACUAntiMatterProjectile03 = Class(MultiCompositeEmitterProjectile) {
 }
 
 --  UEF ACU Cluster Missle Pack
+---@class UEFACUClusterMIssileProjectile : SinglePolyTrailProjectile
 UEFACUClusterMIssileProjectile = Class(SinglePolyTrailProjectile) {
     DestroyOnImpact = false,
     FxTrails = ACUsEffectTemplate.UEFCruiseMissile01Trails,
@@ -228,6 +246,7 @@ UEFACUClusterMIssileProjectile = Class(SinglePolyTrailProjectile) {
     FxImpactUnderWater = {},
 }
 
+---@class UEFACUClusterMIssileProjectile02 : SinglePolyTrailProjectile
 UEFACUClusterMIssileProjectile02 = Class(EmitterProjectile) {
     DestroyOnImpact = false,
     FxTrails = {'/effects/emitters/mortar_munition_01_emit.bp',},
@@ -241,6 +260,7 @@ UEFACUClusterMIssileProjectile02 = Class(EmitterProjectile) {
 }
 
 --  Serephim Quantum Storm
+---@class SeraACUQuantumStormProjectile01 : EmitterProjectile
 SeraACUQuantumStormProjectile01 = Class(EmitterProjectile) {
     FxImpactTrajectoryAligned = false,
     FxTrails = EffectTemplate.SDFExperimentalPhasonProjFXTrails01,
@@ -257,6 +277,7 @@ SeraACUQuantumStormProjectile01 = Class(EmitterProjectile) {
     FxShieldHitScale = 0.5,
 }
 
+---@class SeraACUQuantumStormProjectile02 : EmitterProjectile
 SeraACUQuantumStormProjectile02 = Class(EmitterProjectile) {
     FxImpactTrajectoryAligned = false,
     FxTrails = EffectTemplate.SDFExperimentalPhasonProjFXTrails01,
@@ -273,6 +294,7 @@ SeraACUQuantumStormProjectile02 = Class(EmitterProjectile) {
     FxShieldHitScale = 0.7,
 }
 
+---@class SeraACUQuantumStormProjectile03 : EmitterProjectile
 SeraACUQuantumStormProjectile03 = Class(EmitterProjectile) {
     FxImpactTrajectoryAligned = false,
     FxTrails = EffectTemplate.SDFExperimentalPhasonProjFXTrails01,
@@ -290,6 +312,7 @@ SeraACUQuantumStormProjectile03 = Class(EmitterProjectile) {
 }
 
 --  Serephim Rapid Cannon
+---@class SeraRapidCannon01Projectile : MultiPolyTrailProjectile
 SeraRapidCannon01Projectile = Class(MultiPolyTrailProjectile) {
     FxImpactNone = EffectTemplate.SDFAireauWeaponHit01,
     FxImpactUnit = EffectTemplate.SDFAireauWeaponHitUnit,
@@ -310,6 +333,7 @@ SeraRapidCannon01Projectile = Class(MultiPolyTrailProjectile) {
 }
 
 --  Serephim Rapid Cannon V2
+---@class SeraRapidCannon01Projectile02 : MultiPolyTrailProjectile
 SeraRapidCannon01Projectile02 = Class(MultiPolyTrailProjectile) {
     FxImpactNone = EffectTemplate.SDFAireauWeaponHit01,
     FxImpactUnit = EffectTemplate.SDFAireauWeaponHitUnit,
@@ -330,6 +354,7 @@ SeraRapidCannon01Projectile02 = Class(MultiPolyTrailProjectile) {
 }
 
 --  Serephim Rapid Cannon V3
+---@class SeraRapidCannon01Projectile03 : MultiPolyTrailProjectile
 SeraRapidCannon01Projectile03 = Class(MultiPolyTrailProjectile) {
     FxImpactNone = EffectTemplate.SDFAireauWeaponHit01,
     FxImpactUnit = EffectTemplate.SDFAireauWeaponHitUnit,
@@ -349,6 +374,7 @@ SeraRapidCannon01Projectile03 = Class(MultiPolyTrailProjectile) {
     FxShieldHitScale = 0.7,
 }
 
+---@class InvisoProjectile01 : MultiCompositeEmitterProjectile
 InvisoProjectile01 = Class(MultiCompositeEmitterProjectile) {
     FxImpactUnit = ACUsEffectTemplate.CybranACUEMPArrayHit01,
     FxImpactProp = ACUsEffectTemplate.CybranACUEMPArrayHit01,
@@ -383,6 +409,7 @@ InvisoProjectile01 = Class(MultiCompositeEmitterProjectile) {
     end,
 }
 
+---@class InvisoProjectile02 : MultiCompositeEmitterProjectile
 InvisoProjectile02 = Class(MultiCompositeEmitterProjectile) {
     FxImpactUnit = ACUsEffectTemplate.CybranACUEMPArrayHit01,
     FxImpactProp = ACUsEffectTemplate.CybranACUEMPArrayHit01,
@@ -417,6 +444,7 @@ InvisoProjectile02 = Class(MultiCompositeEmitterProjectile) {
     end,
 }
 
+---@class InvisoProjectile03 : MultiCompositeEmitterProjectile
 InvisoProjectile03 = Class(MultiCompositeEmitterProjectile) {
     FxImpactUnit = ACUsEffectTemplate.CybranACUEMPArrayHit01,
     FxImpactProp = ACUsEffectTemplate.CybranACUEMPArrayHit01,
@@ -452,6 +480,7 @@ InvisoProjectile03 = Class(MultiCompositeEmitterProjectile) {
 }
 
 -- Serephim Overcharge Projectile
+---@class SOmegaCannonOverCharge : MultiPolyTrailProjectile
 SOmegaCannonOverCharge = Class(MultiPolyTrailProjectile) {
     FxImpactTrajectoryAligned = false,
     FxImpactLand = ACUsEffectTemplate.OmegaOverChargeLandHit,
@@ -470,6 +499,7 @@ SOmegaCannonOverCharge = Class(MultiPolyTrailProjectile) {
 }
 
 --  UEF Gatling Projectile V3
+---@class UEFHeavyPlasmaGatlingCannon03 : SinglePolyTrailProjectile
 UEFHeavyPlasmaGatlingCannon03 = Class(SinglePolyTrailProjectile) {
     FxImpactTrajectoryAligned = false,
     FxImpactUnit = EffectTemplate.THeavyPlasmaGatlingCannonHit,
@@ -483,6 +513,7 @@ UEFHeavyPlasmaGatlingCannon03 = Class(SinglePolyTrailProjectile) {
 }
 
 --  UEF Gatling Projectile V2
+---@class UEFHeavyPlasmaGatlingCannon01 : SinglePolyTrailProjectile
 UEFHeavyPlasmaGatlingCannon01 = Class(SinglePolyTrailProjectile) {
     FxImpactTrajectoryAligned = false,
     FxImpactUnit = EffectTemplate.THeavyPlasmaGatlingCannonHit,
@@ -496,6 +527,7 @@ UEFHeavyPlasmaGatlingCannon01 = Class(SinglePolyTrailProjectile) {
 }
 
 --  UEF Gatling Projectile V3
+---@class UEFHeavyPlasmaGatlingCannon02 : SinglePolyTrailProjectile
 UEFHeavyPlasmaGatlingCannon02 = Class(SinglePolyTrailProjectile) {
     FxImpactTrajectoryAligned = false,
     FxImpactUnit = EffectTemplate.THeavyPlasmaGatlingCannonHit,
