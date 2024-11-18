@@ -1,9 +1,8 @@
 -----------------------------------------------------------------
 -- Author(s):  Exavier Macbeth
 -- Summary  :  BlackOps: Adv Command Unit - UEF ACU
--- Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
-local Shield = import('/lua/shield.lua').Shield
 local ACUUnit = import('/lua/defaultunits.lua').ACUUnit
 local TerranWeaponFile = import('/lua/terranweapons.lua')
 local TANTorpedoAngler = TerranWeaponFile.TANTorpedoAngler
@@ -21,9 +20,16 @@ local UEFACUAntiMatterWeapon = BOWeapons.UEFACUAntiMatterWeapon
 local PDLaserGrid = BOWeapons.PDLaserGrid2
 local CEMPArrayBeam01 = BOWeapons.CEMPArrayBeam01
 
+-- Upvalue for performance
+local TrashBagAdd = TrashBag.Add
+
+
+---@class EEL0001 : ACUUnit
 EEL0001 = Class(ACUUnit) {
     DeathThreadDestructionWaitTime = 2,
     PainterRange = {},
+    -- Storage for upgrade weapons status
+    WeaponEnabled = {},
 
     Weapons = {
         RightZephyr = Class(TDFZephyrCannonWeapon) {},
@@ -103,14 +109,13 @@ EEL0001 = Class(ACUUnit) {
             end,
         },
     },
-    
+
+    ---@param self EEL0001 
     __init = function(self)
         ACUUnit.__init(self, 'RightZephyr')
     end,
 
-    -- Storage for upgrade weapons status
-    WeaponEnabled = {},
-
+    ---@param self EEL0001
     OnCreate = function(self)
         ACUUnit.OnCreate(self)
         self:SetCapturable(false)
@@ -127,8 +132,13 @@ EEL0001 = Class(ACUUnit) {
         self:AddBuildRestriction(categories.UEF * (categories.BUILTBYTIER2COMMANDER + categories.BUILTBYTIER3COMMANDER + categories.BUILTBYTIER4COMMANDER))
     end,
 
+    ---@param self EEL0001
+    ---@param builder Unit
+    ---@param layer Layer
     OnStopBeingBuilt = function(self,builder,layer)
         ACUUnit.OnStopBeingBuilt(self,builder,layer)
+        local trash = self.Trash
+
         if self:BeenDestroyed() then return end
         self.Animator = CreateAnimator(self)
         self.Animator:SetPrecedence(0)
@@ -142,14 +152,14 @@ EEL0001 = Class(ACUUnit) {
         self.Rotator1 = CreateRotator(self, 'Back_ShieldPack_Spinner01', 'z', nil, 0, 20, 0)
         self.Rotator2 = CreateRotator(self, 'Back_ShieldPack_Spinner02', 'z', nil, 0, 40, 0)
         self.RadarDish1 = CreateRotator(self, 'Back_IntelPack_Dish', 'y', nil, 0, 20, 0)
-        self.Trash:Add(self.Rotator1)
-        self.Trash:Add(self.Rotator2)
-        self.Trash:Add(self.RadarDish1)
+        TrashBagAdd(trash, self.Rotator1)
+        TrashBagAdd(trash, self.Rotator2)
+        TrashBagAdd(trash, self.RadarDish1)
         self.ShieldEffectsBag2 = {}
         self.FlamerEffectsBag = {}
         self:ForkThread(self.GiveInitialResources)
         self.SpysatEnabled = false
-        
+
         -- Disable Upgrade Weapons
         self:SetWeaponEnabledByLabel('RightZephyr', true)
         self:SetWeaponEnabledByLabel('TorpedoLauncher', false)
@@ -164,6 +174,9 @@ EEL0001 = Class(ACUUnit) {
         self:SetWeaponEnabledByLabel('DeathWeapon', false)
     end,
 
+    ---@param self EEL0001
+    ---@param unitBeingBuilt Unit
+    ---@param order string
     OnStartBuild = function(self, unitBeingBuilt, order)
         ACUUnit.OnStartBuild(self, unitBeingBuilt, order)
         if self.Animator then
@@ -172,16 +185,21 @@ EEL0001 = Class(ACUUnit) {
         self.UnitBuildOrder = order
     end,
 
+    ---@param self EEL0001
+    ---@param unitBeingBuilt Unit
+    ---@param order string
     CreateBuildEffects = function(self, unitBeingBuilt, order)
         local UpgradesFrom = unitBeingBuilt.Blueprint.General.UpgradesFrom
         -- If we are assisting an upgrading unit, or repairing a unit, play seperate effects
         if (order == 'Repair' and not unitBeingBuilt:IsBeingBuilt()) or (UpgradesFrom and UpgradesFrom ~= 'none' and self:IsUnitState('Guarding'))then
             EffectUtil.CreateDefaultBuildBeams(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
         else
-            EffectUtil.CreateUEFCommanderBuildSliceBeams(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)        
-        end           
+            EffectUtil.CreateUEFCommanderBuildSliceBeams(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
+        end
     end,
 
+    ---@param self EEL0001
+    ---@param unitBeingBuilt Unit
     OnStopBuild = function(self, unitBeingBuilt)
         ACUUnit.OnStopBuild(self, unitBeingBuilt)
         if self:BeenDestroyed() then return end
@@ -189,8 +207,12 @@ EEL0001 = Class(ACUUnit) {
             self.Animator:PlayAnim(self.IdleAnim, true)
         end
     end,
-    
+
+    ---@param self EEL0001
+    ---@param PodNumber number
     RebuildPod = function(self, PodNumber)
+        local trash = self.Trash
+
         if PodNumber == 1 then
             -- Force pod rebuilds to queue up
             if self.RebuildingPod2 ~= nil then
@@ -206,7 +228,7 @@ EEL0001 = Class(ACUUnit) {
                 local pod = CreateUnitHPR('UEA0001', self.Army, location[1], location[2], location[3], 0, 0, 0)
                 pod:SetParent(self, 'LeftPod')
                 pod:SetCreator(self)
-                self.Trash:Add(pod)
+                TrashBagAdd(trash, pod)
                 self.LeftPod = pod
             end
         elseif PodNumber == 2 then
@@ -224,13 +246,16 @@ EEL0001 = Class(ACUUnit) {
                 local pod = CreateUnitHPR('UEA0001', self.Army, location[1], location[2], location[3], 0, 0, 0)
                 pod:SetParent(self, 'RightPod')
                 pod:SetCreator(self)
-                self.Trash:Add(pod)
+                TrashBagAdd(trash, pod)
                 self.RightPod = pod
             end
         end
         self:RequestRefreshUI()
     end,
-    
+
+    ---@param self EEL0001
+    ---@param pod string
+    ---@param rebuildDrone boolean
     NotifyOfPodDeath = function(self, pod, rebuildDrone)
         if rebuildDrone == true then
             if pod == 'LeftPod' then
@@ -241,7 +266,7 @@ EEL0001 = Class(ACUUnit) {
                 if self.HasRightPod == true then
                     self.RebuildThread2 = self:ForkThread(self.RebuildPod, 2)
                 end
-            elseif pod == 'SpySat' and self.SpysatEnabled then 
+            elseif pod == 'SpySat' and self.SpysatEnabled then
                 self.Satellite = nil
                 self:ForkThread(self.SatSpawn, true)
             end
@@ -250,7 +275,11 @@ EEL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EEL0001
+    ---@param respawn boolean
     SatSpawn = function(self, respawn)
+        local trash = self.Trash
+
         if respawn then
             WaitSeconds(300)
         end
@@ -258,7 +287,7 @@ EEL0001 = Class(ACUUnit) {
             local location = self:GetPosition('Torso')
             self.Satellite = CreateUnitHPR('EEA0002', self.Army, location[1], location[2], location[3], 0, 0, 0)
             self.Satellite:AttachTo(self, 'Back_IntelPack')
-            self.Trash:Add(self.Satellite)
+            TrashBagAdd(trash, self.Satellite)
             self.Satellite.Parent = self
             self.Satellite:SetParent(self, 'SpySat')
             self:PlayUnitSound('LaunchSat')
@@ -267,6 +296,10 @@ EEL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EEL0001
+    ---@param instigator Unit
+    ---@param type DamageType
+    ---@param overkillRatio number
     OnKilled = function(self, instigator, type, overkillRatio)
         if self.Satellite and not self.Satellite:IsDead() and not self.Satellite.IsDying then
             self.Satellite:Kill()
@@ -274,7 +307,8 @@ EEL0001 = Class(ACUUnit) {
         end
         ACUUnit.OnKilled(self, instigator, type, overkillRatio)
     end,
-    
+
+    ---@param self EEL0001
     OnDestroy = function(self)
         if self.Satellite and not self.Satellite:IsDead() and not self.Satellite.IsDying then
             self.Satellite:Destroy()
@@ -283,12 +317,14 @@ EEL0001 = Class(ACUUnit) {
         ACUUnit.OnDestroy(self)
     end,
 
+    ---@param self EEL0001
+    ---@param bit number
     OnScriptBitClear = function(self, bit)
         if bit == 0 then -- shield toggle
             self.Rotator1:SetTargetSpeed(0)
             self.Rotator2:SetTargetSpeed(0)
             if self.ShieldEffectsBag2 then
-                for k, v in self.ShieldEffectsBag2 do
+                for _, v in self.ShieldEffectsBag2 do
                     v:Destroy()
                 end
                 self.ShieldEffectsBag2 = {}
@@ -304,25 +340,29 @@ EEL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EEL0001
+    ---@param bit number
     OnScriptBitSet = function(self, bit)
+        local army = self.Army
+
         if bit == 0 then -- shield toggle
             self.Rotator1:SetTargetSpeed(90)
             self.Rotator2:SetTargetSpeed(-180)
             if self.ShieldEffectsBag2 then
-                for k, v in self.ShieldEffectsBag2 do
+                for _, v in self.ShieldEffectsBag2 do
                     v:Destroy()
                 end
                 self.ShieldEffectsBag2 = {}
             end
-            for k, v in self.ShieldEffects2 do
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter01', self.Army, v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter02', self.Army, v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter03', self.Army, v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter04', self.Army, v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter05', self.Army, v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter06', self.Army, v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter07', self.Army, v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter08', self.Army, v))
+            for _, v in self.ShieldEffects2 do
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter01', army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter02', army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter03', army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter04', army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter05', army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter06', army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter07', army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter08', army, v))
             end
             self:EnableShield()
             self:PlayUnitAmbientSound('ActiveLoop')
@@ -336,17 +376,22 @@ EEL0001 = Class(ACUUnit) {
     end,
 
     -- New function to set up production numbers
+    ---@param self EEL0001
+    ---@param bp Blueprint
     SetProduction = function(self, bp)
         local energy = bp.ProductionPerSecondEnergy or 0
         local mass = bp.ProductionPerSecondMass or 0
-        
+
         local bpEcon = self.Blueprint.Economy
-        
-        self:SetProductionPerSecondEnergy(energy + bpEcon.ProductionPerSecondEnergy or 0)
-        self:SetProductionPerSecondMass(mass + bpEcon.ProductionPerSecondMass or 0)
+
+        self:SetProductionPerSecondEnergy((energy + bpEcon.ProductionPerSecondEnergy) or 0)
+        self:SetProductionPerSecondMass((mass + bpEcon.ProductionPerSecondMass) or 0)
     end,
-    
+
     -- Function to toggle the Zephyr Booster
+    ---@param self EEL0001
+    ---@param damage number
+    ---@param radius number
     TogglePrimaryGun = function(self, damage, radius)
         local wep = self:GetWeaponByLabel('RightZephyr')
         local oc = self:GetWeaponByLabel('OverCharge')
@@ -373,17 +418,19 @@ EEL0001 = Class(ACUUnit) {
             self:SetPainterRange('JuryRiggedZephyrRemove', radius, true)
         end
     end,
-    
+
+    ---@param self EEL0001
+    ---@param toggle boolean
     SortFlameEffects = function(self, toggle)
         -- Empty the bag
-        for k, v in self.FlamerEffectsBag do
+        for _, v in self.FlamerEffectsBag do
             v:Destroy()
         end
         self.FlamerEffectsBag = {}
         
         -- Fill it if we're turning on
         if toggle then
-            for k, v in self.FlamerEffects do
+            for _, v in self.FlamerEffects do
                 table.insert(self.FlamerEffectsBag, CreateAttachedEmitter(self, 'Flamer_Torch', self.Army, v):ScaleEmitter(0.0625))
             end
         end
@@ -391,6 +438,10 @@ EEL0001 = Class(ACUUnit) {
 
     -- Target painter. 0 damage as primary weapon, controls targeting
     -- for the variety of changing ranges on the ACU with upgrades.
+    ---@param self EEL0001
+    ---@param enh string
+    ---@param newRange number
+    ---@param delete boolean
     SetPainterRange = function(self, enh, newRange, delete)
         if delete and self.PainterRange[string.sub(enh, 0, -7)] then
             self.PainterRange[string.sub(enh, 0, -7)] = nil
@@ -399,7 +450,7 @@ EEL0001 = Class(ACUUnit) {
         end
         
         local range = 22
-        for upgrade, radius in self.PainterRange do
+        for _, radius in self.PainterRange do
             if radius > range then range = radius end
         end
         
@@ -407,6 +458,9 @@ EEL0001 = Class(ACUUnit) {
         wep:ChangeMaxRadius(range)
     end,
 
+    ---@param self EEL0001
+    ---@param enh UnitBlueprintEnhancements
+    ---@param removal boolean
     CreateEnhancement = function(self, enh, removal)
         ACUUnit.CreateEnhancement(self, enh)
         

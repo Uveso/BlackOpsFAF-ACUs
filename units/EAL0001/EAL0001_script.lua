@@ -1,31 +1,38 @@
 -----------------------------------------------------------------
 -- Author(s):  avier Macbeth
 -- Summary  :  BlackOps: Adv Command Unit - Aeon ACU
--- Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
 
-local ACUUnit = import('/lua/defaultunits.lua').ACUUnit
+-- Imports
+local DefaultUnits = import('/lua/defaultunits.lua')
+local DefaultWeapons = import('/lua/defaultweapons.lua')
 local AWeapons = import('/lua/aeonweapons.lua')
+local EffectUtil = import('/lua/EffectUtilities.lua')
+local Buff = import('/lua/sim/Buff.lua')
+local BOWeapons = import('/mods/BlackOpsFAF-ACUs/lua/ACUsWeapons.lua')
+local VizMarker = import('/lua/sim/VizMarker.lua').VizMarker
+
+local ACUUnit = DefaultUnits.ACUUnit
 local ADFDisruptorCannonWeapon = AWeapons.ADFDisruptorCannonWeapon
 local ADFOverchargeWeapon = AWeapons.ADFOverchargeWeapon
 local ADFChronoDampener = AWeapons.ADFChronoDampener
 local AIFArtilleryMiasmaShellWeapon = AWeapons.AIFArtilleryMiasmaShellWeapon
 local AANChronoTorpedoWeapon = AWeapons.AANChronoTorpedoWeapon
-local ADFPhasonLaser = AWeapons.ADFPhasonLaser
 local AAMWillOWisp = AWeapons.AAMWillOWisp
-local DeathNukeWeapon = import('/lua/sim/defaultweapons.lua').DeathNukeWeapon
-local EffectUtil = import('/lua/EffectUtilities.lua')
-local Buff = import('/lua/sim/Buff.lua')
-local BOWeapons = import('/mods/BlackOpsFAF-ACUs/lua/ACUsWeapons.lua')
-local AeonACUPhasonLaser = BOWeapons.AeonACUPhasonLaser 
+local DeathNukeWeapon = DefaultWeapons.DeathNukeWeapon
+local AeonACUPhasonLaser = BOWeapons.AeonACUPhasonLaser
 local AIFQuasarAntiTorpedoWeapon = AWeapons.AIFQuasarAntiTorpedoWeapon
 local CEMPArrayBeam01 = BOWeapons.CEMPArrayBeam01
 local QuantumMaelstromWeapon = BOWeapons.QuantumMaelstromWeapon
-local VizMarker = import('/lua/sim/VizMarker.lua').VizMarker
 
+---@class EAL0001 : ACUUnit
 EAL0001 = Class(ACUUnit) {
     DeathThreadDestructionWaitTime = 2,
     PainterRange = {},
+
+    -- Storage for upgrade weapons status
+    WeaponEnabled = {},
 
     Weapons = {
         DeathWeapon = Class(DeathNukeWeapon) {},
@@ -45,13 +52,12 @@ EAL0001 = Class(ACUUnit) {
         AutoOverCharge = Class(ADFOverchargeWeapon) {},
     },
 
+    ---@param self EAL0001
     __init = function(self)
         ACUUnit.__init(self, 'RightDisruptor')
     end,
 
-    -- Storage for upgrade weapons status
-    WeaponEnabled = {},
-
+    ---@param self EAL0001
     OnCreate = function(self)
         ACUUnit.OnCreate(self)
         self:SetCapturable(false)
@@ -71,6 +77,9 @@ EAL0001 = Class(ACUUnit) {
         self.MaelstromEffects01 = {}
     end,
 
+    ---@param self EAL0001
+    ---@param builder Unit
+    ---@param layer Layer
     OnStopBeingBuilt = function(self, builder, layer)
         ACUUnit.OnStopBeingBuilt(self, builder, layer)
 
@@ -91,6 +100,10 @@ EAL0001 = Class(ACUUnit) {
         self:ForkThread(self.GiveInitialResources)
     end,
 
+    ---@param self EAL0001
+    ---@param instigator Unit
+    ---@param type DamageType
+    ---@param overkillRatio number
     OnKilled = function(self, instigator, type, overkillRatio)
         ACUUnit.OnKilled(self, instigator, type, overkillRatio)
         if self.RemoteViewingData.Satellite then
@@ -99,6 +112,7 @@ EAL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EAL0001
     DisableRemoteViewingButtons = function(self)
         self.Sync.Abilities = self.Blueprint.Abilities
         self.Sync.Abilities.TargetLocation.Active = false
@@ -106,6 +120,7 @@ EAL0001 = Class(ACUUnit) {
         self:RemoveToggleCap('RULEUTC_IntelToggle')
     end,
 
+    ---@param self EAL0001
     EnableRemoteViewingButtons = function(self)
         self.Sync.Abilities = self.Blueprint.Abilities
         self.Sync.Abilities.TargetLocation.Active = true
@@ -113,6 +128,7 @@ EAL0001 = Class(ACUUnit) {
         self:RemoveToggleCap('RULEUTC_IntelToggle')
     end,
 
+    ---@param self EAL0001
     RemoteCheck = function(self)
         if self:HasEnhancement('FarsightOptics') and self.ScryActive then
             self:DisableRemoteViewingButtons()
@@ -123,15 +139,19 @@ EAL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EAL0001
+    ---@param location Vector
     OnTargetLocation = function(self, location)
         -- Initial energy drain here - we drain resources instantly when an eye is relocated (including initial move)
-        local aiBrain = self:GetAIBrain()
+        local aiBrain = self.AIBrain
         local bp = self.Blueprint
         local have = aiBrain:GetEconomyStored('ENERGY')
         local need = bp.Economy.InitialRemoteViewingEnergyDrain
+
         if not (have > need) then
             return
         end
+
         local selfpos = self:GetPosition()
         local destRange = VDist2(location[1], location[3], selfpos[1], selfpos[3])
         if destRange <= 300 then
@@ -144,12 +164,13 @@ EAL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EAL0001
     CreateVisibleEntity = function(self)
         -- Only give a visible area if we have a location and intel button enabled
         if not self.RemoteViewingData.VisibleLocation then
             return
         end
-        
+
         if self.RemoteViewingData.VisibleLocation and self.RemoteViewingData.DisableCounter == 0 and self.RemoteViewingData.IntelButton then
             local bp = self.Blueprint
             -- Create new visible area
@@ -162,7 +183,7 @@ EAL0001 = Class(ACUUnit) {
                     Omni = false,
                     Radar = false,
                     Vision = true,
-                    Army = self:GetAIBrain():GetArmyIndex(),
+                    Army = self.AIBrain:GetArmyIndex(),
                 }
                 self.RemoteViewingData.Satellite = VizMarker(spec)
                 self.Trash:Add(self.RemoteViewingData.Satellite)
@@ -177,6 +198,7 @@ EAL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EAL0001
     DisableVisibleEntity = function(self)
         -- Visible entity already off
         WaitSeconds(5)
@@ -186,21 +208,32 @@ EAL0001 = Class(ACUUnit) {
             self.RemoteViewingData.Satellite:DisableIntel('Vision')
         end
     end,
-    
+
+    ---@param self EAL0001
+    ---@param unitBeingBuilt Unit
+    ---@param order string
     OnStartBuild = function(self, unitBeingBuilt, order)
         ACUUnit.OnStartBuild(self, unitBeingBuilt, order)
-        self.UnitBuildOrder = order  
+        self.UnitBuildOrder = order
     end,
-    
+
+    ---@param self EAL0001
+    ---@param unitBeingBuilt Unit
+    ---@param order string unused
     CreateBuildEffects = function(self, unitBeingBuilt, order)
         EffectUtil.CreateAeonCommanderBuildingEffects(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
     end,
 
+    ---@param self EAL0001
+    ---@param attachBone Bone
+    ---@param unit Unit
     OnTransportDetach = function(self, attachBone, unit)
         ACUUnit.OnTransportDetach(self, attachBone, unit)
         self:StopSiloBuild()
     end,
 
+    ---@param self EAL0001
+    ---@param bit number
     OnScriptBitClear = function(self, bit)
         if bit == 0 then -- Shield toggle
             self:DisableShield()
@@ -208,14 +241,17 @@ EAL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EAL0001
     OnScriptBitSet = function(self, bit)
         if bit == 0 then -- Shield toggle
             self:EnableShield()
             self:PlayUnitAmbientSound('ActiveLoop')
         end
     end,
-    
+
     -- New function to set up production numbers
+    ---@param self EAL0001
+    ---@param bp Blueprint
     SetProduction = function(self, bp)
         local energy = bp.ProductionPerSecondEnergy or 0
         local mass = bp.ProductionPerSecondMass or 0
@@ -227,6 +263,9 @@ EAL0001 = Class(ACUUnit) {
     end,
 
     -- Function to toggle the Ripper
+    ---@param self EAL0001
+    ---@param damage number
+    ---@param radius number
     TogglePrimaryGun = function(self, damage, radius)
         local wep = self:GetWeaponByLabel('RightDisruptor')
         local oc = self:GetWeaponByLabel('OverCharge')
@@ -243,7 +282,7 @@ EAL0001 = Class(ACUUnit) {
         wep:ChangeMaxRadius(wepRadius)
         oc:ChangeMaxRadius(ocRadius)
         aoc:ChangeMaxRadius(aocRadius)
-        
+
         -- As radius is only passed when turning on, use the bool
         if radius then
             self:SetPainterRange('DisruptorAmplifier', radius, false)
@@ -251,25 +290,30 @@ EAL0001 = Class(ACUUnit) {
             self:SetPainterRange('DisruptorAmplifierRemove', radius, true)
         end
     end,
-    
+
     -- Target painter. 0 damage as primary weapon, controls targeting
     -- for the variety of changing ranges on the ACU with upgrades.
+    ---@param self EAL0001
+    ---@param enh string
+    ---@param newRange number
+    ---@param delete boolean
     SetPainterRange = function(self, enh, newRange, delete)
         if delete and self.PainterRange[string.sub(enh, 0, -7)] then
             self.PainterRange[string.sub(enh, 0, -7)] = nil
         elseif not delete and not self.PainterRange[enh] then
             self.PainterRange[enh] = newRange
         end 
-        
+
         local range = 22
         for upgrade, radius in self.PainterRange do
             if radius > range then range = radius end
         end
-        
+
         local wep = self:GetWeaponByLabel('TargetPainter')
         wep:ChangeMaxRadius(range)
     end,
-    
+
+    ---@param self EAL0001
     SpecialBones = function(self)
         if self:HasEnhancement('ShieldBattery') and self:HasEnhancement('DualMiasmaArtillery') then
             self:ShowBone('ShieldPack_Arty_LArm', true)
@@ -285,17 +329,20 @@ EAL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self EAL0001
+    ---@param enh string
+    ---@param removal any
     CreateEnhancement = function(self, enh, removal)
         ACUUnit.CreateEnhancement(self, enh)
-        
+
         local bp = self.Blueprint.Enhancements[enh]
         if not bp then return end
-        
+
         if enh == 'ImprovedEngineering' then
             self:RemoveBuildRestriction(categories.AEON * (categories.BUILTBYTIER2COMMANDER))
             self:updateBuildRestrictions()
             self:SetProduction(bp)
-            
+
             if not Buffs['AEONACUT2BuildRate'] then
                 BuffBlueprint {
                     Name = 'AEONACUT2BuildRate',

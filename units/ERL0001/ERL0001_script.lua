@@ -1,7 +1,7 @@
 -----------------------------------------------------------------
 -- Author(s):  Exavier Macbeth
 -- Summary  :  BlackOps: Adv Command Unit - Cybran ACU
--- Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
 
 local ACUUnit = import('/lua/defaultunits.lua').ACUUnit
@@ -12,7 +12,6 @@ local CDFOverchargeWeapon = CWeapons.CDFOverchargeWeapon
 local CANTorpedoLauncherWeapon = CWeapons.CANTorpedoLauncherWeapon
 local RocketPack = CWeapons.CDFRocketIridiumWeapon02
 local EffectUtil = import('/lua/EffectUtilities.lua')
-local Entity = import('/lua/sim/Entity.lua').Entity
 local Buff = import('/lua/sim/Buff.lua')
 local DeathNukeWeapon = import('/lua/sim/defaultweapons.lua').DeathNukeWeapon
 local BOWeapons = import('/mods/BlackOpsFAF-ACUs/lua/ACUsWeapons.lua')
@@ -20,9 +19,12 @@ local EMPWeapon = BOWeapons.EMPWeapon
 local CEMPArrayBeam01 = BOWeapons.CEMPArrayBeam01
 local CEMPArrayBeam02 = BOWeapons.CEMPArrayBeam02
 
+---@class ERL0001 : ACUUnit
 ERL0001 = Class(ACUUnit) {
     DeathThreadDestructionWaitTime = 2,
     PainterRange = {},
+    -- Storage for upgrade weapons status
+    WeaponEnabled = {},
 
     Weapons = {
         DeathWeapon = Class(DeathNukeWeapon) {},
@@ -43,14 +45,13 @@ ERL0001 = Class(ACUUnit) {
         OverCharge = Class(CDFOverchargeWeapon) {},
         AutoOverCharge = Class(CDFOverchargeWeapon) {},
     },
-    
+
+    ---@param self ERL0001
     __init = function(self)
         ACUUnit.__init(self, 'RightRipper')
     end,
 
-    -- Storage for upgrade weapons status
-    WeaponEnabled = {},
-
+    ---@param self ERL0001
     OnCreate = function(self)
         ACUUnit.OnCreate(self)
         self:SetCapturable(false)
@@ -65,6 +66,9 @@ ERL0001 = Class(ACUUnit) {
         self:AddBuildRestriction(categories.CYBRAN * (categories.BUILTBYTIER2COMMANDER + categories.BUILTBYTIER3COMMANDER + categories.BUILTBYTIER4COMMANDER))
     end,
 
+    ---@param self ERL0001
+    ---@param builder Unit
+    ---@param layer Layer
     OnStopBeingBuilt = function(self, builder, layer)
         ACUUnit.OnStopBeingBuilt(self, builder, layer)
         self:SetWeaponEnabledByLabel('RightRipper', true)
@@ -91,23 +95,30 @@ ERL0001 = Class(ACUUnit) {
         self:SetWeaponEnabledByLabel('AA04', false)
     end,
 
+    ---@param self ERL0001
+    ---@param unitBeingBuilt Unit
+    ---@param order string
     OnStartBuild = function(self, unitBeingBuilt, order)    
         ACUUnit.OnStartBuild(self, unitBeingBuilt, order)
         self.UnitBuildOrder = order
     end,
 
     -- New function to set up production numbers
+    ---@param self ERL0001
+    ---@param bp Blueprint
     SetProduction = function(self, bp)
         local energy = bp.ProductionPerSecondEnergy or 0
         local mass = bp.ProductionPerSecondMass or 0
-        
         local bpEcon = self.Blueprint.Economy
-        
+
         self:SetProductionPerSecondEnergy(energy + bpEcon.ProductionPerSecondEnergy or 0)
         self:SetProductionPerSecondMass(mass + bpEcon.ProductionPerSecondMass or 0)
     end,
-    
+
     -- Function to toggle the Ripper
+    ---@param self ERL0001
+    ---@param RoF number
+    ---@param radius number
     TogglePrimaryGun = function(self, RoF, radius)
         local wep = self:GetWeaponByLabel('RightRipper')
         local oc = self:GetWeaponByLabel('OverCharge')
@@ -137,6 +148,10 @@ ERL0001 = Class(ACUUnit) {
 
     -- Target painter. 0 damage as primary weapon, controls targeting
     -- for the variety of changing ranges on the ACU with upgrades.
+    ---@param self ERL0001 
+    ---@param enh UnitBlueprintEnhancements
+    ---@param newRange number
+    ---@param delete boolean
     SetPainterRange = function(self, enh, newRange, delete)
         if delete and self.PainterRange[string.sub(enh, 0, -7)] then
             self.PainterRange[string.sub(enh, 0, -7)] = nil
@@ -153,11 +168,16 @@ ERL0001 = Class(ACUUnit) {
         wep:ChangeMaxRadius(range)
     end,
 
+    ---@param self ERL0001
+    ---@param attachBone Bone
+    ---@param unit Unit
     OnTransportDetach = function(self, attachBone, unit)
         ACUUnit.OnTransportDetach(self, attachBone, unit)
         self:StopSiloBuild()
     end,
 
+    ---@param self ERL0001
+    ---@param bit number
     OnScriptBitClear = function(self, bit)
         if bit == 8 then -- Cloak toggle
             self:PlayUnitAmbientSound('ActiveLoop')
@@ -174,6 +194,8 @@ ERL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self ERL0001
+    ---@param bit number
     OnScriptBitSet = function(self, bit)
         if bit == 8 then -- Cloak toggle
             self:StopUnitAmbientSound('ActiveLoop')
@@ -190,11 +212,17 @@ ERL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self ERL0001
+    ---@param unitBeingBuilt Unit
+    ---@param order string unused
     CreateBuildEffects = function(self, unitBeingBuilt, order)
        EffectUtil.SpawnBuildBots(self, unitBeingBuilt, 5, self.BuildEffectsBag)
        EffectUtil.CreateCybranBuildBeams(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
     end,
 
+    ---@param self ERL0001
+    ---@param enh string
+    ---@param removal boolean
     CreateEnhancement = function(self, enh, removal)
         ACUUnit.CreateEnhancement(self, enh)
 
@@ -1044,6 +1072,42 @@ ERL0001 = Class(ACUUnit) {
         end
     end,
 
+    ---@param self ERL0001
+    ---@param intel Unit
+    OnIntelEnabled = function(self, intel)
+        ACUUnit.OnIntelEnabled(self, intel)
+        if self:HasEnhancement('CloakingSubsystems') and self:IsIntelEnabled('Cloak') then
+            self:SetEnergyMaintenanceConsumptionOverride(self.Blueprint.Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
+            self:SetMaintenanceConsumptionActive()
+            if not self.IntelEffectsBag then
+                self.IntelEffectsBag = {}
+                self.CreateTerrainTypeEffects(self, self.IntelEffects.Cloak, 'FXIdle',  self:GetCurrentLayer(), nil, self.IntelEffectsBag)
+            end            
+        elseif self:HasEnhancement('ElectronicCountermeasures') and self:IsIntelEnabled('RadarStealth') and self:IsIntelEnabled('SonarStealth') then
+            self:SetEnergyMaintenanceConsumptionOverride(self.Blueprint.Enhancements['ElectronicCountermeasures'].MaintenanceConsumptionPerSecondEnergy)
+            self:SetMaintenanceConsumptionActive()  
+            if not self.IntelEffectsBag then 
+                self.IntelEffectsBag = {}
+                self.CreateTerrainTypeEffects(self, self.IntelEffects.Field, 'FXIdle',  self:GetCurrentLayer(), nil, self.IntelEffectsBag)
+            end
+        end
+    end,
+
+    ---@param self ERL0001
+    ---@param intel Unit
+    OnIntelDisabled = function(self, intel)
+        ACUUnit.OnIntelDisabled(self, intel)
+        if self.IntelEffectsBag then
+            EffectUtil.CleanupEffectBag(self,'IntelEffectsBag')
+            self.IntelEffectsBag = nil
+        end
+        if self:HasEnhancement('CloakingSubsystems') and not self:IsIntelEnabled('Cloak') then
+            self:SetMaintenanceConsumptionInactive()
+        elseif self:HasEnhancement('ElectronicCountermeasures') and not self:IsIntelEnabled('RadarStealth') and not self:IsIntelEnabled('SonarStealth') then
+            self:SetMaintenanceConsumptionInactive()
+        end
+    end,
+
     IntelEffects = {
         Cloak = {
             {
@@ -1080,38 +1144,6 @@ ERL0001 = Class(ACUUnit) {
             },    
         },    
     },
-
-    OnIntelEnabled = function(self, intel)
-        ACUUnit.OnIntelEnabled(self, intel)
-        if self:HasEnhancement('CloakingSubsystems') and self:IsIntelEnabled('Cloak') then
-            self:SetEnergyMaintenanceConsumptionOverride(self.Blueprint.Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
-            self:SetMaintenanceConsumptionActive()
-            if not self.IntelEffectsBag then
-                self.IntelEffectsBag = {}
-                self.CreateTerrainTypeEffects(self, self.IntelEffects.Cloak, 'FXIdle',  self:GetCurrentLayer(), nil, self.IntelEffectsBag)
-            end            
-        elseif self:HasEnhancement('ElectronicCountermeasures') and self:IsIntelEnabled('RadarStealth') and self:IsIntelEnabled('SonarStealth') then
-            self:SetEnergyMaintenanceConsumptionOverride(self.Blueprint.Enhancements['ElectronicCountermeasures'].MaintenanceConsumptionPerSecondEnergy)
-            self:SetMaintenanceConsumptionActive()  
-            if not self.IntelEffectsBag then 
-                self.IntelEffectsBag = {}
-                self.CreateTerrainTypeEffects(self, self.IntelEffects.Field, 'FXIdle',  self:GetCurrentLayer(), nil, self.IntelEffectsBag)
-            end
-        end
-    end,
-
-    OnIntelDisabled = function(self, intel)
-        ACUUnit.OnIntelDisabled(self, intel)
-        if self.IntelEffectsBag then
-            EffectUtil.CleanupEffectBag(self,'IntelEffectsBag')
-            self.IntelEffectsBag = nil
-        end
-        if self:HasEnhancement('CloakingSubsystems') and not self:IsIntelEnabled('Cloak') then
-            self:SetMaintenanceConsumptionInactive()
-        elseif self:HasEnhancement('ElectronicCountermeasures') and not self:IsIntelEnabled('RadarStealth') and not self:IsIntelEnabled('SonarStealth') then
-            self:SetMaintenanceConsumptionInactive()
-        end
-    end,
 }
     
 TypeClass = ERL0001
