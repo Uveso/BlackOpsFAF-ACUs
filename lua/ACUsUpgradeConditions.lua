@@ -3,15 +3,18 @@
 -- Author(s): Dru Staltman, John Comes
 -- Summary  : Generic AI Platoon Build Conditions
 --            Build conditions always return true or false
--- Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
 
 local AIUtils = import('/lua/ai/aiutilities.lua')
 
+---@param aiBrain AIBrain
+---@param upgrade UnitBlueprintEnhancement
+---@return boolean
 function CanUpgrade(aiBrain, upgrade)
     local units = aiBrain:GetListOfUnits(categories.COMMAND, false)
     for _, v in units do
-        local bp = v:GetBlueprint()
+        local bp = v.Blueprint
 
         if bp == nil then
             return false

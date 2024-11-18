@@ -1,10 +1,13 @@
 local Entity = import('/lua/sim/Entity.lua').Entity
 local BlackOpsEffectTemplate = import('/mods/BlackOpsFAF-ACUs/lua/ACUsEffectTemplates.lua')
 
+---@class SeraLambdaFieldDestroyer : Entity
 SeraLambdaFieldDestroyer = Class(Entity) {
     EndPointEffects = {'/effects/emitters/particle_cannon_end_01_emit.bp',},
     LambdaEffects = BlackOpsEffectTemplate.LambdaDestroyer,
 
+    ---@param self SeraLambdaFieldDestroyer
+    ---@param spec table
     OnCreate = function(self, spec)
         Entity.OnCreate(self, spec)
         self.Owner = spec.Owner
@@ -17,6 +20,7 @@ SeraLambdaFieldDestroyer = Class(Entity) {
         self.LambdaEffectsBag = {}
     end,
 
+    ---@param self SeraLambdaFieldDestroyer
     OnDestroy = function(self)
         Entity.OnDestroy(self)
         ChangeState(self, self.DeadState)

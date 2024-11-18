@@ -2,7 +2,7 @@
 -- File     :  /cdimage/lua/BlackOpsweapons.lua
 -- Author(s):  Lt_hawkeye
 -- Summary  :
--- Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
 
 local WeaponFile = import('/lua/sim/defaultweapons.lua')
@@ -16,11 +16,15 @@ local SWeapons = import('/lua/seraphimweapons.lua')
 local SIFLaanseTacticalMissileLauncher = SWeapons.SIFLaanseTacticalMissileLauncher
 local SDFSinnuntheWeapon = SWeapons.SDFSinnuntheWeapon
 
+---@class SeraACUMissile : SIFLaanseTacticalMissileLauncher
 SeraACUMissile = Class(SIFLaanseTacticalMissileLauncher) {
     CurrentRack = 1,
 
+    ---@param self SeraACUMissile
+    ---@param muzzle string
     PlayFxMuzzleSequence = function(self, muzzle)
-        local bp = self:GetBlueprint()
+        local bp = self.Blueprint
+
         self.MissileRotator = CreateRotator(self.unit, bp.RackBones[self.CurrentRack].RackBone, 'x', nil, 0, 0, 0)
         muzzle = bp.RackBones[self.CurrentRack].MuzzleBones[1]
         self.MissileRotator:SetGoal(-10):SetSpeed(10)
@@ -29,8 +33,10 @@ SeraACUMissile = Class(SIFLaanseTacticalMissileLauncher) {
         WaitTicks(1)
     end,
 
+    ---@param self SeraACUMissile
+    ---@param muzzle string
     CreateProjectileAtMuzzle = function(self, muzzle)
-        muzzle = self:GetBlueprint().RackBones[self.CurrentRack].MuzzleBones[1]
+        muzzle = self.Blueprint.RackBones[self.CurrentRack].MuzzleBones[1]
         if self.CurrentRack >= 2 then
             self.CurrentRack = 1
         else
@@ -39,6 +45,7 @@ SeraACUMissile = Class(SIFLaanseTacticalMissileLauncher) {
         SIFLaanseTacticalMissileLauncher.CreateProjectileAtMuzzle(self, muzzle)
     end,
 
+    ---@param self SeraACUMissile
     PlayFxRackReloadSequence = function(self)
         WaitTicks(1)
         self.MissileRotator:SetGoal(0):SetSpeed(10)
@@ -48,22 +55,25 @@ SeraACUMissile = Class(SIFLaanseTacticalMissileLauncher) {
     end,
 }
 
+---@class QuantumMaelstromWeapon : Weapon
 QuantumMaelstromWeapon = Class(Weapon) {
     OnFire = function(self)
-        local blueprint = self:GetBlueprint()
-        DamageArea(self.unit, self.unit:GetPosition(), self.CurrentDamageRadius,
-            self.CurrentDamage, blueprint.DamageType, blueprint.DamageFriendly)
+        local blueprint = self.Blueprint
+        DamageArea(self.unit, self.unit:GetPosition(), self.CurrentDamageRadius, self.CurrentDamage, blueprint.DamageType, blueprint.DamageFriendly)
     end,
 }
 
+---@class HawkGaussCannonWeapon : DefaultProjectileWeapon
 HawkGaussCannonWeapon = Class(DefaultProjectileWeapon) {
     FxMuzzleFlash = EffectTemplate.TGaussCannonFlash,
 }
 
+---@class UEFACUAntiMatterWeapon : DefaultProjectileWeapon
 UEFACUAntiMatterWeapon = Class(DefaultProjectileWeapon) {
     FxMuzzleFlash = import('/mods/BlackOpsFAF-ACUs/lua/ACUsEffectTemplates.lua').ACUAntiMatterMuzzle,
 }
 
+---@class PDLaserGrid : DefaultBeamWeapon
 PDLaserGrid = Class(DefaultBeamWeapon) {
     BeamType = CollisionBeamFile.PDLaserCollisionBeam,
     FxMuzzleFlash = {},
@@ -71,9 +81,10 @@ PDLaserGrid = Class(DefaultBeamWeapon) {
     FxUpackingChargeEffects = {},
     FxUpackingChargeEffectScale = 1,
 
+    ---@param self PDLaserGrid
     PlayFxWeaponUnpackSequence = function(self)
-        local army = self.unit:GetArmy()
-        local bp = self:GetBlueprint()
+        local army = self.unit.Army
+        local bp = self.Blueprint
         for _, v in self.FxUpackingChargeEffects do
             for ek, ev in bp.RackBones[self.CurrentRackSalvoNumber].MuzzleBones do
                 CreateAttachedEmitter(self.unit, ev, army, v):ScaleEmitter(self.FxUpackingChargeEffectScale):ScaleEmitter(0.05)
@@ -83,19 +94,24 @@ PDLaserGrid = Class(DefaultBeamWeapon) {
     end,
 }
 
+---@class CEMPArrayBeam01 : DefaultBeamWeapon
 CEMPArrayBeam01 = Class(DefaultBeamWeapon) {
     BeamType = CollisionBeamFile.CEMPArrayBeam01CollisionBeam,
     FxMuzzleFlash = {},
     FxChargeMuzzleFlash = {},
 }
 
+---@class CEMPArrayBeam02 : DefaultBeamWeapon
 CEMPArrayBeam02 = Class(DefaultBeamWeapon) {
     BeamType = CollisionBeamFile.CEMPArrayBeam02CollisionBeam,
     FxMuzzleFlash = {},
     FxChargeMuzzleFlash = {},
 }
 
+---@class EMPWeapon : CCannonMolecularWeapon
 EMPWeapon = Class(CCannonMolecularWeapon) {
+
+    ---@param self EMPWeapon
     OnWeaponFired = function(self)
         CCannonMolecularWeapon.OnWeaponFired(self)
         self.targetaquired = self:GetCurrentTargetPos()
@@ -119,6 +135,7 @@ EMPWeapon = Class(CCannonMolecularWeapon) {
         end
     end,
 
+    ---@param self EMPWeapon
     ArrayEffectsCleanup = function(self)
         WaitTicks(20)
         if self.unit.EMPArrayEffects01 then
@@ -130,6 +147,7 @@ EMPWeapon = Class(CCannonMolecularWeapon) {
     end,
 }
 
+---@class PDLaserGrid2 : DefaultBeamWeapon
 PDLaserGrid2 = Class(DefaultBeamWeapon) {
     BeamType = CollisionBeamFile.PDLaser2CollisionBeam,
     FxMuzzleFlash = {},
@@ -137,10 +155,11 @@ PDLaserGrid2 = Class(DefaultBeamWeapon) {
     FxUpackingChargeEffects = {},
     FxUpackingChargeEffectScale = 1,
 
+    ---@param self PDLaserGrid2
     PlayFxWeaponUnpackSequence = function(self)
         if not self.ContBeamOn then
             local army = self.unit:GetArmy()
-            local bp = self:GetBlueprint()
+            local bp = self.Blueprint
             for _, v in self.FxUpackingChargeEffects do
                 for ek, ev in bp.RackBones[self.CurrentRackSalvoNumber].MuzzleBones do
                     CreateAttachedEmitter(self.unit, ev, army, v):ScaleEmitter(self.FxUpackingChargeEffectScale)
@@ -151,11 +170,13 @@ PDLaserGrid2 = Class(DefaultBeamWeapon) {
     end,
 }
 
+---@class UEFACUHeavyPlasmaGatlingCannonWeapon : DefaultProjectileWeapon
 UEFACUHeavyPlasmaGatlingCannonWeapon = Class(DefaultProjectileWeapon) {
     FxMuzzleFlash = import('/mods/BlackOpsFAF-ACUs/lua/ACUsEffectTemplates.lua').UEFACUHeavyPlasmaGatlingCannonMuzzleFlash,
     FxMuzzleFlashScale = 0.35,
 }
 
+---@class AeonACUPlasmaCannon : DefaultProjectileWeapon
 AeonACUPhasonLaser = Class(DefaultBeamWeapon) {
     BeamType = CollisionBeamFile.AeonACUPhasonLaserCollisionBeam,
     FxMuzzleFlash = {},
@@ -163,6 +184,7 @@ AeonACUPhasonLaser = Class(DefaultBeamWeapon) {
     FxUpackingChargeEffects = EffectTemplate.CMicrowaveLaserCharge01,
     FxUpackingChargeEffectScale = 0.33,
 
+    ---@param self AeonACUPhasonLaser
     PlayFxWeaponUnpackSequence = function(self)
         if not self.ContBeamOn then
             local army = self.unit:GetArmy()
@@ -177,17 +199,21 @@ AeonACUPhasonLaser = Class(DefaultBeamWeapon) {
     end,
 }
 
+---@class SeraACURapidWeapon : DefaultProjectileWeapon
 SeraACURapidWeapon = Class(DefaultProjectileWeapon) {
     FxMuzzleFlash = EffectTemplate.SDFAireauWeaponMuzzleFlash,
     FxMuzzleFlashScale = 0.33,
 }
 
+---@class SeraACUBigBallWeapon : DefaultProjectileWeapon
 SeraACUBigBallWeapon = Class(DefaultProjectileWeapon) {
     FxMuzzleFlash = EffectTemplate.SDFSinnutheWeaponMuzzleFlash,
     FxChargeMuzzleFlash = EffectTemplate.SDFSinnutheWeaponChargeMuzzleFlash,
     FxChargeMuzzleFlashScale = 0.33,
     FxMuzzleFlashScale = 0.33,
 
+    ---@param self SeraACUBigBallWeapon
+    ---@param muzzle string
     PlayFxMuzzleChargeSequence = function(self, muzzle)
         -- CreateRotator(unit, bone, axis, [goal], [speed], [accel], [goalspeed])
         if not self.ClawTopRotator then
