@@ -121,7 +121,7 @@ function FakeGateInUnit(unit, callbackFunction)
         unit:SetBusy(false)
 
         local totalBones = unit:GetBoneCount() - 1
-        local army = unit:GetArmy()
+        local army = unit.Army
         for _, v in import('/lua/EffectTemplates.lua').UnitTeleportSteam01 do
             for bone = 1, totalBones do
                 CreateAttachedEmitter(unit,bone,army, v)

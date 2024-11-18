@@ -53,7 +53,7 @@ EEL0001 = Class(ACUUnit) {
                 if self.unit.SpinManip then
                     self.unit.SpinManip:SetTargetSpeed(0)
                 end
-                self.ExhaustEffects = EffectUtil.CreateBoneEffects(self.unit, 'Exhaust', self.unit:GetArmy(), EffectTemplate.WeaponSteam01)
+                self.ExhaustEffects = EffectUtil.CreateBoneEffects(self.unit, 'Exhaust', self.unit.Army, EffectTemplate.WeaponSteam01)
                 UEFACUHeavyPlasmaGatlingCannonWeapon.PlayFxRackSalvoChargeSequence(self)
             end,
             
@@ -203,7 +203,7 @@ EEL0001 = Class(ACUUnit) {
                 self:SetWorkProgress(0.0)
                 self.RebuildingPod = nil
                 local location = self:GetPosition('AttachSpecial02')
-                local pod = CreateUnitHPR('UEA0001', self:GetArmy(), location[1], location[2], location[3], 0, 0, 0)
+                local pod = CreateUnitHPR('UEA0001', self.Army, location[1], location[2], location[3], 0, 0, 0)
                 pod:SetParent(self, 'LeftPod')
                 pod:SetCreator(self)
                 self.Trash:Add(pod)
@@ -221,7 +221,7 @@ EEL0001 = Class(ACUUnit) {
                 self:SetWorkProgress(0.0)
                 self.RebuildingPod2 = nil
                 local location = self:GetPosition('AttachSpecial01')
-                local pod = CreateUnitHPR('UEA0001', self:GetArmy(), location[1], location[2], location[3], 0, 0, 0)
+                local pod = CreateUnitHPR('UEA0001', self.Army, location[1], location[2], location[3], 0, 0, 0)
                 pod:SetParent(self, 'RightPod')
                 pod:SetCreator(self)
                 self.Trash:Add(pod)
@@ -256,7 +256,7 @@ EEL0001 = Class(ACUUnit) {
         end
         if not self.Satellite and self.SpysatEnabled then
             local location = self:GetPosition('Torso')
-            self.Satellite = CreateUnitHPR('EEA0002', self:GetArmy(), location[1], location[2], location[3], 0, 0, 0)
+            self.Satellite = CreateUnitHPR('EEA0002', self.Army, location[1], location[2], location[3], 0, 0, 0)
             self.Satellite:AttachTo(self, 'Back_IntelPack')
             self.Trash:Add(self.Satellite)
             self.Satellite.Parent = self
@@ -315,14 +315,14 @@ EEL0001 = Class(ACUUnit) {
                 self.ShieldEffectsBag2 = {}
             end
             for k, v in self.ShieldEffects2 do
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter01', self:GetArmy(), v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter02', self:GetArmy(), v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter03', self:GetArmy(), v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter04', self:GetArmy(), v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter05', self:GetArmy(), v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter06', self:GetArmy(), v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter07', self:GetArmy(), v))
-                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter08', self:GetArmy(), v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter01', self.Army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter02', self.Army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter03', self.Army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter04', self.Army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter05', self.Army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter06', self.Army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter07', self.Army, v))
+                table.insert(self.ShieldEffectsBag2, CreateAttachedEmitter(self, 'Back_ShieldPack_Emitter08', self.Army, v))
             end
             self:EnableShield()
             self:PlayUnitAmbientSound('ActiveLoop')
@@ -384,7 +384,7 @@ EEL0001 = Class(ACUUnit) {
         -- Fill it if we're turning on
         if toggle then
             for k, v in self.FlamerEffects do
-                table.insert(self.FlamerEffectsBag, CreateAttachedEmitter(self, 'Flamer_Torch', self:GetArmy(), v):ScaleEmitter(0.0625))
+                table.insert(self.FlamerEffectsBag, CreateAttachedEmitter(self, 'Flamer_Torch', self.Army, v):ScaleEmitter(0.0625))
             end
         end
     end,
@@ -1282,7 +1282,7 @@ EEL0001 = Class(ACUUnit) {
             
         elseif enh == 'LeftPod' then
             local location = self:GetPosition('AttachSpecial02')
-            local pod = CreateUnitHPR('UEA0001', self:GetArmy(), location[1], location[2], location[3], 0, 0, 0)
+            local pod = CreateUnitHPR('UEA0001', self.Army, location[1], location[2], location[3], 0, 0, 0)
             pod:SetParent(self, 'LeftPod')
             pod:SetCreator(self)
             self.Trash:Add(pod)
@@ -1290,7 +1290,7 @@ EEL0001 = Class(ACUUnit) {
             self.LeftPod = pod
         elseif enh == 'RightPod' then
             local location = self:GetPosition('AttachSpecial01')
-            local pod = CreateUnitHPR('UEA0001', self:GetArmy(), location[1], location[2], location[3], 0, 0, 0)
+            local pod = CreateUnitHPR('UEA0001', self.Army, location[1], location[2], location[3], 0, 0, 0)
             pod:SetParent(self, 'RightPod')
             pod:SetCreator(self)
             self.Trash:Add(pod)

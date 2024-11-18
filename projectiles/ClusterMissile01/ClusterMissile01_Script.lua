@@ -60,7 +60,7 @@ ClusterMissle01 = Class(TMissileCruiseProjectile) {
               
             -- Split effects
             for k, v in FxFragEffect do
-                CreateEmitterAtEntity(self, self:GetArmy(), v)
+                CreateEmitterAtEntity(self, self.Army, v)
             end
             
             local vx, vy, vz = self:GetVelocity()

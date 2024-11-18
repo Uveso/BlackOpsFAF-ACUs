@@ -15,7 +15,7 @@ Cluster01Effect02 = Class(NullShell) {
     end,
 
     EffectThread = function(self)
-        local army = self:GetArmy()
+        local army = self.Army
 
         WaitSeconds(4)
         for _, v in EffectTemplate.TNukeHeadEffects01 do

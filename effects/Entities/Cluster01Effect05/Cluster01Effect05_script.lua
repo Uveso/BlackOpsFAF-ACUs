@@ -15,7 +15,7 @@ Cluster01Effect05 = Class(NullShell) {
     end,
 
     EffectThread = function(self)
-        local army = self:GetArmy()
+        local army = self.Army
 
         for _, v in EffectTemplate.TNukeBaseEffects02 do
             CreateEmitterOnEntity(self, army, v):ScaleEmitter(0.03125)

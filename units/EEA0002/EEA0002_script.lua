@@ -29,7 +29,7 @@ EEA0002 = Class(TAirUnit) {
         if self.IsDying then 
             return 
         end
-        local army = self:GetArmy()
+        local army = self.Army
         self.IsDying = true
         self.Parent:NotifyOfPodDeath(self.Pod)
         self.Parent = nil
@@ -93,7 +93,7 @@ EEA0002 = Class(TAirUnit) {
     end,
 
     DeathEffectsThread = function(self)
-        local army = self:GetArmy()
+        local army = self.Army
         -- Create Initial explosion effects
         explosion.CreateFlash(self, 'XEA0002', 1.5, army)
         CreateAttachedEmitter(self,'Turret_Barrel_Muzzle', army, '/effects/emitters/explosion_fire_sparks_02_emit.bp'):OffsetEmitter(0, 0, 0) --Sparks
