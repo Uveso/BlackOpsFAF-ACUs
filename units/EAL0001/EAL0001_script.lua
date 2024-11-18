@@ -6,7 +6,7 @@
 
 -- Imports
 local DefaultUnits = import('/lua/defaultunits.lua')
-local DefaultWeapons = import('/lua/defaultweapons.lua')
+local DefaultWeapons = import('/lua/sim/defaultweapons.lua')
 local AWeapons = import('/lua/aeonweapons.lua')
 local EffectUtil = import('/lua/EffectUtilities.lua')
 local Buff = import('/lua/sim/Buff.lua')
