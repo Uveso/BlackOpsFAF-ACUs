@@ -2,7 +2,7 @@
 -- File     :  /mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01EffectController01/Cluster01EffectController01_script.lua
 -- Author(s):  Gordon Duclos
 -- Summary  :  Nuclear explosion script
--- Copyright © 2005, 2006 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005, 2006 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------------------------------------------------------------------
 
 local NullShell = import('/lua/sim/defaultprojectiles.lua').NullShell
@@ -10,11 +10,25 @@ local EffectTemplate = import('/lua/EffectTemplates.lua')
 local Util = import('/lua/utilities.lua')
 local RandomFloat = Util.GetRandomFloat
 
+-- Upvalue for performance
+local CreateEmitterAtEntity = CreateEmitterAtEntity
+local MathSin = math.sin
+local MathCos = math.cos
+local MathPi = math.pi
+local TrashBagAdd = TrashBag.Add
+local ForkThread = ForkThread
+
+
+---@class Cluster01EffectController01 : NullShell
 Cluster01EffectController01 = Class(NullShell) {
+
+    ---@param self Cluster01EffectController01
+    ---@param Data table unused
     PassData = function(self, Data)
         self:CreateNuclearExplosion()
     end,
 
+    ---@param self Cluster01EffectController01
     CreateNuclearExplosion = function(self)
         local myBlueprint = self.Blueprint
 
@@ -26,9 +40,9 @@ Cluster01EffectController01 = Class(NullShell) {
         self:ForkThread(self.EffectThread)
     end,
 
+    ---@param self Cluster01EffectController01
     EffectThread = function(self)
         local army = self.Army
-        local position = self:GetPosition()
 
         -- Create full-screen glow flash
         WaitSeconds(0.015625)
@@ -53,6 +67,7 @@ Cluster01EffectController01 = Class(NullShell) {
         WaitSeconds(0.034375)
     end,
 
+    ---@param self Cluster01EffectController01
     CreateInitialFireballSmokeRing = function(self)
         local sides = 12
         local angle = (2 * math.pi) / sides
@@ -60,13 +75,14 @@ Cluster01EffectController01 = Class(NullShell) {
         local OffsetMod = 0.25
 
         for i = 0, sides - 1 do
-            local X = math.sin(i * angle)
-            local Z = math.cos(i * angle)
+            local X = MathSin(i * angle)
+            local Z = MathCos(i * angle)
             self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Shockwave01/Cluster01Shockwave01_proj.bp', X * OffsetMod, 0.09375, Z * OffsetMod, X, 0, Z)
                 :SetVelocity(velocity):SetAcceleration(-0.015625)
         end
     end,
 
+    ---@param self Cluster01EffectController01
     CreateOuterRingWaveSmokeRing = function(self)
         local sides = 32
         local angle = (2 * math.pi) / sides
@@ -75,8 +91,8 @@ Cluster01EffectController01 = Class(NullShell) {
         local projectiles = {}
 
         for i = 0, sides - 1 do
-            local X = math.sin(i * angle)
-            local Z = math.cos(i * angle)
+            local X = MathSin(i * angle)
+            local Z = MathCos(i * angle)
             local proj =  self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Shockwave02/Cluster01Shockwave02_proj.bp', X * OffsetMod, 0.15625, Z * OffsetMod, X, 0, Z)
                 :SetVelocity(velocity)
             table.insert(projectiles, proj)
@@ -89,6 +105,7 @@ Cluster01EffectController01 = Class(NullShell) {
         end
     end,
 
+    ---@param self Cluster01EffectController01
     CreateFlavorPlumes = function(self)
         local numProjectiles = 8
         local angle = (2 * math.pi) / numProjectiles
@@ -108,9 +125,9 @@ Cluster01EffectController01 = Class(NullShell) {
         -- Launch projectiles at semi-random angles away from the sphere, with enough
         -- initial velocity to escape sphere core
         for i = 0, numProjectiles - 1 do
-            xVec = math.sin(angleInitial + (i * angle) + RandomFloat(-angleVariation, angleVariation))
+            xVec = MathSin(angleInitial + (i * angle) + RandomFloat(-angleVariation, angleVariation))
             yVec = RandomFloat(0.2, 1)
-            zVec = math.cos(angleInitial + (i * angle) + RandomFloat(-angleVariation, angleVariation))
+            zVec = MathCos(angleInitial + (i * angle) + RandomFloat(-angleVariation, angleVariation))
             velocity = 0.10625 + (yVec * RandomFloat(2, 5))
             table.insert(projectiles, self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01FlavorPlume01/Cluster01FlavorPlume01_proj.bp', 0, 0, 0, xVec, yVec, zVec):SetVelocity(velocity))
         end
@@ -123,6 +140,7 @@ Cluster01EffectController01 = Class(NullShell) {
         end
     end,
 
+    ---@param self Cluster01EffectController01
     CreateHeadConvectionSpinners = function(self)
         local sides = 10
         local angle = (2 * math.pi) / sides
@@ -132,8 +150,8 @@ Cluster01EffectController01 = Class(NullShell) {
         local projectiles = {}
 
         for i = 0, sides - 1 do
-            local x = math.sin(i * angle) * OffsetMod
-            local z = math.cos(i * angle) * OffsetMod
+            local x = MathSin(i * angle) * OffsetMod
+            local z = MathCos(i * angle) * OffsetMod
             local proj = self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Effect03/Cluster01Effect03_proj.bp', x, HeightOffset, z, x, 0, z)
                 :SetVelocity(velocity)
             table.insert(projectiles, proj)
@@ -141,8 +159,8 @@ Cluster01EffectController01 = Class(NullShell) {
 
         WaitSeconds(0.0625)
         for i = 0, sides - 1 do
-            local x = math.sin(i * angle)
-            local z = math.cos(i * angle)
+            local x = MathSin(i * angle)
+            local z = MathCos(i * angle)
             local proj = projectiles[i + 1]
             proj:SetVelocityAlign(false)
             proj:SetOrientation(OrientFromDir(Util.Cross(Vector(x, 0, z), Vector(0, 1, 0))), true)
@@ -151,6 +169,8 @@ Cluster01EffectController01 = Class(NullShell) {
         end
     end,
 
+    ---@param self Cluster01EffectController01
+    ---@param army Army
     CreateGroundPlumeConvectionEffects = function(self, army)
         for _, v in EffectTemplate.TNukeGroundConvectionEffects01 do
             CreateEmitterAtEntity(self, army, v):ScaleEmitter(0.03125)
@@ -158,12 +178,8 @@ Cluster01EffectController01 = Class(NullShell) {
 
         local sides = 10
         local angle = (2 * math.pi) / sides
-        local inner_lower_limit = 0.0625
         local outer_lower_limit = 0.0625
         local outer_upper_limit = 0.0625
-
-        local inner_lower_height = 0.03125
-        local inner_upper_height = 0.09375
         local outer_lower_height = 0.0625
         local outer_upper_height = 0.09375
 
@@ -171,9 +187,9 @@ Cluster01EffectController01 = Class(NullShell) {
         angle = (2 * math.pi) / sides
         for i = 0, sides - 1 do
             local magnitude = RandomFloat(outer_lower_limit, outer_upper_limit)
-            local x = math.sin(i * angle + RandomFloat(-angle / 2, angle / 4)) * magnitude
-            local z = math.cos(i * angle + RandomFloat(-angle / 2, angle / 4)) * magnitude
-            local velocity = RandomFloat(1, 3) * 0.09375 Last Number
+            local x = MathSin(i * angle + RandomFloat(-angle / 2, angle / 4)) * magnitude
+            local z = MathCos(i * angle + RandomFloat(-angle / 2, angle / 4)) * magnitude
+            local velocity = RandomFloat(1, 3) * 0.09375 -- Last Number
             self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Effect05/Cluster01Effect05_proj.bp', x, RandomFloat(outer_lower_height, outer_upper_height), z, x, 0, z)
                 :SetVelocity(x * velocity, 0, z * velocity)
         end

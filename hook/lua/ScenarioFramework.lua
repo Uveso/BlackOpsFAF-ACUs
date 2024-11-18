@@ -1,3 +1,5 @@
+---@param unit Unit
+---@param callbackFunction function
 function FakeGateInUnit(unit, callbackFunction)
     local faction
     local bp = unit.Blueprint
