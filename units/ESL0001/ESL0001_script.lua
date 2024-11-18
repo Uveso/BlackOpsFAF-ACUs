@@ -50,7 +50,7 @@ ESL0001 = Class(ACUUnit) {
         self:SetCapturable(false)
         self:SetupBuildBones()
 
-        local bp = self:GetBlueprint()
+        local bp = self.Blueprint
         for _, v in bp.Display.WarpInEffect.HideBones do
             self:HideBone(v, true)
         end
@@ -100,7 +100,7 @@ ESL0001 = Class(ACUUnit) {
     end,
 
     CreateBuildEffects = function(self, unitBeingBuilt, order)
-        EffectUtil.CreateSeraphimUnitEngineerBuildingEffects(self, unitBeingBuilt, self:GetBlueprint().General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
+        EffectUtil.CreateSeraphimUnitEngineerBuildingEffects(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
     end,
 
     OnTransportDetach = function(self, attachBone, unit)
@@ -125,7 +125,7 @@ ESL0001 = Class(ACUUnit) {
     end,
 
     RegenBuffThread = function(self, enh)
-        local bp = self:GetBlueprint().Enhancements[enh]
+        local bp = self.Blueprint.Enhancements[enh]
         local buff
 
         if enh == 'CombatEngineering' then
@@ -149,7 +149,7 @@ ESL0001 = Class(ACUUnit) {
         local energy = bp.ProductionPerSecondEnergy or 0
         local mass = bp.ProductionPerSecondMass or 0
 
-        local bpEcon = self:GetBlueprint().Economy
+        local bpEcon = self.Blueprint.Economy
 
         self:SetProductionPerSecondEnergy(energy + bpEcon.ProductionPerSecondEnergy or 0)
         self:SetProductionPerSecondMass(mass + bpEcon.ProductionPerSecondMass or 0)
@@ -161,9 +161,9 @@ ESL0001 = Class(ACUUnit) {
         local oc = self:GetWeaponByLabel('OverCharge')
         local aoc = self:GetWeaponByLabel('AutoOverCharge')
 
-        local wepRadius = radius or wep:GetBlueprint().MaxRadius
-        local ocRadius = radius or oc:GetBlueprint().MaxRadius
-        local aocRadius = radius or aoc:GetBlueprint().MaxRadius
+        local wepRadius = radius or wep.Blueprint.MaxRadius
+        local ocRadius = radius or oc.Blueprint.MaxRadius
+        local aocRadius = radius or aoc.Blueprint.MaxRadius
 
         -- Change Damage
         wep:AddDamageMod(damage)
@@ -238,7 +238,7 @@ ESL0001 = Class(ACUUnit) {
     OnIntelEnabled = function(self, intel)
         ACUUnit.OnIntelEnabled(self, intel)
         if self:HasEnhancement('CloakingSubsystems') and self.HiddenACU then
-            self:SetEnergyMaintenanceConsumptionOverride(self:GetBlueprint().Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
+            self:SetEnergyMaintenanceConsumptionOverride(self.Blueprint.Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
             self:SetMaintenanceConsumptionActive()
             if not self.IntelEffectsBag then
                 self.IntelEffectsBag = {}
@@ -313,7 +313,7 @@ ESL0001 = Class(ACUUnit) {
 
     CreateEnhancement = function(self, enh, removal)
         ACUUnit.CreateEnhancement(self, enh)
-        local bp = self:GetBlueprint().Enhancements[enh]
+        local bp = self.Blueprint.Enhancements[enh]
         if not bp then return end
         if enh == 'ImprovedEngineering' then
             self:RemoveBuildRestriction(categories.SERAPHIM * categories.BUILTBYTIER2COMMANDER)
@@ -687,7 +687,7 @@ ESL0001 = Class(ACUUnit) {
 
             local torp = self:GetWeaponByLabel('TorpedoLauncher')
             torp:AddDamageMod(bp.NewTorpDamage)
-            torp:ChangeRateOfFire(torp:GetBlueprint().RateOfFire)
+            torp:ChangeRateOfFire(torp.Blueprint.RateOfFire)
             
             self:TogglePrimaryGun(bp.NewDamage)
         elseif enh == 'AdvancedWarheads' then
@@ -758,7 +758,7 @@ ESL0001 = Class(ACUUnit) {
             self:SetWeaponEnabledByLabel('BigBallCannon', false)
 
             local wep = self:GetWeaponByLabel('BigBallCannon')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
         elseif enh == 'PowerConversionEnhancer' then
@@ -795,8 +795,8 @@ ESL0001 = Class(ACUUnit) {
 
             local cannon = self:GetWeaponByLabel('BigBallCannon')
             cannon:AddDamageMod(bp.StormDamage)
-            cannon:ChangeMaxRadius(cannon:GetBlueprint().MaxRadius)
-            cannon:ChangeDamageRadius(cannon:GetBlueprint().DamageRadius)
+            cannon:ChangeMaxRadius(cannon.Blueprint.MaxRadius)
+            cannon:ChangeDamageRadius(cannon.Blueprint.DamageRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -832,7 +832,7 @@ ESL0001 = Class(ACUUnit) {
 
             local cannon = self:GetWeaponByLabel('BigBallCannon')
             cannon:AddDamageMod(bp.StormDamage)
-            cannon:ChangeMaxRadius(cannon:GetBlueprint().MaxRadius)
+            cannon:ChangeMaxRadius(cannon.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -903,7 +903,7 @@ ESL0001 = Class(ACUUnit) {
 
             local gun = self:GetWeaponByLabel('RapidCannon')
             gun:AddDamageMod(bp.GatlingDamage)
-            gun:ChangeMaxRadius(gun:GetBlueprint().MaxRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -1065,7 +1065,7 @@ ESL0001 = Class(ACUUnit) {
                 Buff.RemoveBuff(self, 'SeraphimIntelHealth1')
             end
 
-            local bpIntel = self:GetBlueprint().Intel
+            local bpIntel = self.Blueprint.Intel
             if ScenarioInfo.Options.OmniCheat ~= "on" or self:GetAIBrain().BrainType == 'Human' then
                 self:SetIntelRadius('Vision', bpIntel.VisionRadius)
                 self:SetIntelRadius('WaterVision', bpIntel.VisionRadius)

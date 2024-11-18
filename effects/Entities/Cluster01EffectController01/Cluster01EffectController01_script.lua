@@ -16,7 +16,7 @@ Cluster01EffectController01 = Class(NullShell) {
     end,
 
     CreateNuclearExplosion = function(self)
-        local myBlueprint = self:GetBlueprint()
+        local myBlueprint = self.Blueprint
 
         -- Play the "NukeExplosion" sound
         if myBlueprint.Audio.NukeExplosion then

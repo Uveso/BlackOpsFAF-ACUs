@@ -57,7 +57,7 @@ EAL0001 = Class(ACUUnit) {
         self:SetCapturable(false)
         self:SetupBuildBones()
 
-        local bp = self:GetBlueprint()
+        local bp = self.Blueprint
         for _, v in bp.Display.WarpInEffect.HideBones do
             self:HideBone(v, true)
         end
@@ -86,7 +86,7 @@ EAL0001 = Class(ACUUnit) {
         self:SetWeaponEnabledByLabel('AntiTorpedo', false)
         self:SetWeaponEnabledByLabel('AntiMissile', false)
         
-        self.Sync.Abilities = self:GetBlueprint().Abilities
+        self.Sync.Abilities = self.Blueprint.Abilities
         self.Sync.Abilities.TargetLocation.Active = false
         self:ForkThread(self.GiveInitialResources)
     end,
@@ -100,14 +100,14 @@ EAL0001 = Class(ACUUnit) {
     end,
 
     DisableRemoteViewingButtons = function(self)
-        self.Sync.Abilities = self:GetBlueprint().Abilities
+        self.Sync.Abilities = self.Blueprint.Abilities
         self.Sync.Abilities.TargetLocation.Active = false
         self:AddToggleCap('RULEUTC_IntelToggle')
         self:RemoveToggleCap('RULEUTC_IntelToggle')
     end,
 
     EnableRemoteViewingButtons = function(self)
-        self.Sync.Abilities = self:GetBlueprint().Abilities
+        self.Sync.Abilities = self.Blueprint.Abilities
         self.Sync.Abilities.TargetLocation.Active = true
         self:AddToggleCap('RULEUTC_IntelToggle')
         self:RemoveToggleCap('RULEUTC_IntelToggle')
@@ -126,7 +126,7 @@ EAL0001 = Class(ACUUnit) {
     OnTargetLocation = function(self, location)
         -- Initial energy drain here - we drain resources instantly when an eye is relocated (including initial move)
         local aiBrain = self:GetAIBrain()
-        local bp = self:GetBlueprint()
+        local bp = self.Blueprint
         local have = aiBrain:GetEconomyStored('ENERGY')
         local need = bp.Economy.InitialRemoteViewingEnergyDrain
         if not (have > need) then
@@ -151,7 +151,7 @@ EAL0001 = Class(ACUUnit) {
         end
         
         if self.RemoteViewingData.VisibleLocation and self.RemoteViewingData.DisableCounter == 0 and self.RemoteViewingData.IntelButton then
-            local bp = self:GetBlueprint()
+            local bp = self.Blueprint
             -- Create new visible area
             if not self.RemoteViewingData.Satellite then
                 local spec = {
@@ -193,7 +193,7 @@ EAL0001 = Class(ACUUnit) {
     end,
     
     CreateBuildEffects = function(self, unitBeingBuilt, order)
-        EffectUtil.CreateAeonCommanderBuildingEffects(self, unitBeingBuilt, self:GetBlueprint().General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
+        EffectUtil.CreateAeonCommanderBuildingEffects(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
     end,
 
     OnTransportDetach = function(self, attachBone, unit)
@@ -220,7 +220,7 @@ EAL0001 = Class(ACUUnit) {
         local energy = bp.ProductionPerSecondEnergy or 0
         local mass = bp.ProductionPerSecondMass or 0
 
-        local bpEcon = self:GetBlueprint().Economy
+        local bpEcon = self.Blueprint.Economy
 
         self:SetProductionPerSecondEnergy(energy + bpEcon.ProductionPerSecondEnergy or 0)
         self:SetProductionPerSecondMass(mass + bpEcon.ProductionPerSecondMass or 0)
@@ -232,9 +232,9 @@ EAL0001 = Class(ACUUnit) {
         local oc = self:GetWeaponByLabel('OverCharge')
         local aoc = self:GetWeaponByLabel('AutoOverCharge')
 
-        local wepRadius = radius or wep:GetBlueprint().MaxRadius
-        local ocRadius = radius or oc:GetBlueprint().MaxRadius
-        local aocRadius = radius or aoc:GetBlueprint().MaxRadius
+        local wepRadius = radius or wep.Blueprint.MaxRadius
+        local ocRadius = radius or oc.Blueprint.MaxRadius
+        local aocRadius = radius or aoc.Blueprint.MaxRadius
 
         -- Change Damage
         wep:AddDamageMod(damage)
@@ -288,7 +288,7 @@ EAL0001 = Class(ACUUnit) {
     CreateEnhancement = function(self, enh, removal)
         ACUUnit.CreateEnhancement(self, enh)
         
-        local bp = self:GetBlueprint().Enhancements[enh]
+        local bp = self.Blueprint.Enhancements[enh]
         if not bp then return end
         
         if enh == 'ImprovedEngineering' then
@@ -437,7 +437,7 @@ EAL0001 = Class(ACUUnit) {
             self:SetWeaponEnabledByLabel('ChronoDampener', false)
             
             local wep = self:GetWeaponByLabel('ChronoDampener')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
         elseif enh == 'AssaultEngineering' then
             self:RemoveBuildRestriction(categories.AEON * (categories.BUILTBYTIER3COMMANDER - categories.BUILTBYTIER4COMMANDER))
             self:updateBuildRestrictions()
@@ -481,7 +481,7 @@ EAL0001 = Class(ACUUnit) {
             self:SetWeaponEnabledByLabel('ChronoDampener2', false)
             
             local wep = self:GetWeaponByLabel('ChronoDampener2')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
         elseif enh == 'ApocalypticEngineering' then
             self:RemoveBuildRestriction(categories.AEON * (categories.BUILTBYTIER4COMMANDER))
             self:updateBuildRestrictions()
@@ -587,7 +587,7 @@ EAL0001 = Class(ACUUnit) {
             
             local torp = self:GetWeaponByLabel('TorpedoLauncher')
             torp:AddDamageMod(bp.TorpDamage)
-            torp:ChangeRateOfFire(torp:GetBlueprint().RateOfFire)
+            torp:ChangeRateOfFire(torp.Blueprint.RateOfFire)
             
             self:TogglePrimaryGun(bp.GunDamage)
         elseif enh == 'AdvancedWarheads' then
@@ -660,8 +660,8 @@ EAL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('MiasmaArtillery', false)
             local wep = self:GetWeaponByLabel('MiasmaArtillery')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
-            wep:ChangeMinRadius(wep:GetBlueprint().MinRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
+            wep:ChangeMinRadius(wep.Blueprint.MinRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -725,7 +725,7 @@ EAL0001 = Class(ACUUnit) {
 
             local arty = self:GetWeaponByLabel('MiasmaArtillery')
             arty:AddDamageMod(bp.ArtilleryDamage)
-            arty:ChangeRateOfFire(arty:GetBlueprint().RateOfFire)
+            arty:ChangeRateOfFire(arty.Blueprint.RateOfFire)
 
         --  Beam Weapon
 
@@ -758,7 +758,7 @@ EAL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('PhasonBeam01', false)
             local beam = self:GetWeaponByLabel('PhasonBeam01')
-            beam:ChangeMaxRadius(beam:GetBlueprint().MaxRadius)
+            beam:ChangeMaxRadius(beam.Blueprint.MaxRadius)
             self:SetPainterRange(enh, 0, true)
         elseif enh == 'DualChannelBooster' then
             if not Buffs['AeonBeamHealth2'] then
@@ -792,7 +792,7 @@ EAL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('PhasonBeam02', false)
             local beam = self:GetWeaponByLabel('PhasonBeam02')
-            beam:ChangeMaxRadius(beam:GetBlueprint().MaxRadius)
+            beam:ChangeMaxRadius(beam.Blueprint.MaxRadius)
             self:SetPainterRange(enh, 0, true)
 
             self:TogglePrimaryGun(bp.NewDamage)
@@ -826,7 +826,7 @@ EAL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('PhasonBeam03', false)
             local beam = self:GetWeaponByLabel('PhasonBeam03')
-            beam:ChangeMaxRadius(beam:GetBlueprint().MaxRadius)
+            beam:ChangeMaxRadius(beam.Blueprint.MaxRadius)
             self:SetPainterRange(enh, 0, true)
             
         -- Shielding
@@ -909,7 +909,7 @@ EAL0001 = Class(ACUUnit) {
                 Buff.RemoveBuff(self, 'AeonIntelHealth1')
             end
             
-            local bpIntel = self:GetBlueprint().Intel
+            local bpIntel = self.Blueprint.Intel
 
             if ScenarioInfo.Options.OmniCheat ~= "on" or self:GetAIBrain().BrainType == 'Human' then
                 self:SetIntelRadius('Vision', bpIntel.VisionRadius)
@@ -1021,8 +1021,8 @@ EAL0001 = Class(ACUUnit) {
             wep:ChangeMaxRadius(bp.MaelstromRadius)
             
             -- Can't use normal methods here due to how the weapon script works
-            wep.CurrentDamage = wep:GetBlueprint().Damage
-            wep.CurrentDamageRadius = wep:GetBlueprint().DamageRadius
+            wep.CurrentDamage = wep.Blueprint.Damage
+            wep.CurrentDamageRadius = wep.Blueprint.DamageRadius
         elseif enh == 'MaelstromQuantumRemove' then
             if Buff.HasBuff(self, 'AeonMaelstromHealth1') then
                 Buff.RemoveBuff(self, 'AeonMaelstromHealth1')
@@ -1038,7 +1038,7 @@ EAL0001 = Class(ACUUnit) {
             self:SetWeaponEnabledByLabel('QuantumMaelstrom', false)
             
             local wep = self:GetWeaponByLabel('QuantumMaelstrom')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
         elseif enh == 'DistortionAmplifier' then
             if not Buffs['AeonMaelstromHealth2'] then
                 BuffBlueprint {
@@ -1082,7 +1082,7 @@ EAL0001 = Class(ACUUnit) {
             self:SetWeaponEnabledByLabel('AntiMissile', false)
             
             local wep = self:GetWeaponByLabel('QuantumMaelstrom')
-            wep.CurrentDamage = wep:GetBlueprint().Damage
+            wep.CurrentDamage = wep.Blueprint.Damage
         elseif enh == 'QuantumInstability' then
             if not Buffs['AeonMaelstromHealth3'] then
                 BuffBlueprint {
@@ -1120,9 +1120,9 @@ EAL0001 = Class(ACUUnit) {
             end
 
             local wep = self:GetWeaponByLabel('QuantumMaelstrom')
-            wep.CurrentDamage = wep:GetBlueprint().Damage
-            wep.CurrentDamageRadius = wep:GetBlueprint().DamageRadius
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep.CurrentDamage = wep.Blueprint.Damage
+            wep.CurrentDamageRadius = wep.Blueprint.DamageRadius
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
         end
 
         -- Remove prerequisites

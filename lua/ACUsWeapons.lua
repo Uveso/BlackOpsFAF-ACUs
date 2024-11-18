@@ -24,7 +24,6 @@ SeraACUMissile = Class(SIFLaanseTacticalMissileLauncher) {
     ---@param muzzle string
     PlayFxMuzzleSequence = function(self, muzzle)
         local bp = self.Blueprint
-
         self.MissileRotator = CreateRotator(self.unit, bp.RackBones[self.CurrentRack].RackBone, 'x', nil, 0, 0, 0)
         muzzle = bp.RackBones[self.CurrentRack].MuzzleBones[1]
         self.MissileRotator:SetGoal(-10):SetSpeed(10)
@@ -188,7 +187,7 @@ AeonACUPhasonLaser = Class(DefaultBeamWeapon) {
     PlayFxWeaponUnpackSequence = function(self)
         if not self.ContBeamOn then
             local army = self.unit:GetArmy()
-            local bp = self:GetBlueprint()
+            local bp = self.Blueprint
             for _, v in self.FxUpackingChargeEffects do
                 for ek, ev in bp.RackBones[self.CurrentRackSalvoNumber].MuzzleBones do
                     CreateAttachedEmitter(self.unit, ev, army, v):ScaleEmitter(self.FxUpackingChargeEffectScale)
@@ -230,7 +229,7 @@ SeraACUBigBallWeapon = Class(DefaultProjectileWeapon) {
         SDFSinnuntheWeapon.PlayFxMuzzleChargeSequence(self, muzzle)
 
         self:ForkThread(function()
-            WaitSeconds(self.unit:GetBlueprint().Weapon[7].MuzzleChargeDelay)
+            WaitSeconds(self.unit.Blueprint.Weapon[7].MuzzleChargeDelay)
 
             self.ClawTopRotator:SetGoal(0):SetSpeed(50)
             self.ClawBottomRotator:SetGoal(0):SetSpeed(50)
