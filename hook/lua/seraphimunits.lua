@@ -16,7 +16,7 @@ LambdaUnit = Class(SStructureUnit) {
             table.insert(self.ShieldEffectsBag, CreateAttachedEmitter(self, 0, self:GetArmy(), v):ScaleEmitter(0.0625):OffsetEmitter(0, 0.5, 0))
         end
 
-        local bp = self:GetBlueprint().Defense.LambdaField
+        local bp = self.Blueprint.Defense.LambdaField
         local field = SeraLambdaField {
             Owner = self,
             Radius = bp.Radius,

@@ -1,6 +1,6 @@
 function FakeGateInUnit(unit, callbackFunction)
     local faction
-    local bp = unit:GetBlueprint()
+    local bp = unit.Blueprint
 
     if EntityCategoryContains(categories.COMMAND, unit) then
         for _, v in bp.Categories do
@@ -129,7 +129,7 @@ function FakeGateInUnit(unit, callbackFunction)
         end
 
         WaitSeconds(2)
-        unit:SetMesh(unit:GetBlueprint().Display.MeshBlueprint, true)
+        unit:SetMesh(unit.Blueprint.Display.MeshBlueprint, true)
     else
         LOG('debug:non commander')
         unit:PlayTeleportChargeEffects(unit:GetPosition(), unit:GetOrientation())

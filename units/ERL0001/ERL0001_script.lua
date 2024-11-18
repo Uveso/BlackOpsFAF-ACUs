@@ -56,7 +56,7 @@ ERL0001 = Class(ACUUnit) {
         self:SetCapturable(false)
         self:SetupBuildBones()
 
-        local bp = self:GetBlueprint()
+        local bp = self.Blueprint
         for _, v in bp.Display.WarpInEffect.HideBones do
             self:HideBone(v, true)
         end
@@ -101,7 +101,7 @@ ERL0001 = Class(ACUUnit) {
         local energy = bp.ProductionPerSecondEnergy or 0
         local mass = bp.ProductionPerSecondMass or 0
         
-        local bpEcon = self:GetBlueprint().Economy
+        local bpEcon = self.Blueprint.Economy
         
         self:SetProductionPerSecondEnergy(energy + bpEcon.ProductionPerSecondEnergy or 0)
         self:SetProductionPerSecondMass(mass + bpEcon.ProductionPerSecondMass or 0)
@@ -113,9 +113,9 @@ ERL0001 = Class(ACUUnit) {
         local oc = self:GetWeaponByLabel('OverCharge')
         local aoc = self:GetWeaponByLabel('AutoOverCharge')
     
-        local wepRadius = radius or wep:GetBlueprint().MaxRadius
-        local ocRadius = radius or oc:GetBlueprint().MaxRadius
-        local aocRadius = radius or aoc:GetBlueprint().MaxRadius
+        local wepRadius = radius or wep.Blueprint.MaxRadius
+        local ocRadius = radius or oc.Blueprint.MaxRadius
+        local aocRadius = radius or aoc.Blueprint.MaxRadius
 
         -- Change RoF
         wep:ChangeRateOfFire(RoF)
@@ -192,13 +192,13 @@ ERL0001 = Class(ACUUnit) {
 
     CreateBuildEffects = function(self, unitBeingBuilt, order)
        EffectUtil.SpawnBuildBots(self, unitBeingBuilt, 5, self.BuildEffectsBag)
-       EffectUtil.CreateCybranBuildBeams(self, unitBeingBuilt, self:GetBlueprint().General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
+       EffectUtil.CreateCybranBuildBeams(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
     end,
 
     CreateEnhancement = function(self, enh, removal)
         ACUUnit.CreateEnhancement(self, enh)
 
-        local bp = self:GetBlueprint().Enhancements[enh]
+        local bp = self.Blueprint.Enhancements[enh]
         if not bp then return end
 
         if enh == 'ImprovedEngineering' then
@@ -386,7 +386,7 @@ ERL0001 = Class(ACUUnit) {
 
             local gun = self:GetWeaponByLabel('RocketPack')
             gun:AddDamageMod(bp.RocketDamageMod)
-            gun:ChangeMaxRadius(gun:GetBlueprint().MaxRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.MaxRadius)
             
             self:SetPainterRange(enh, 0, true)
         elseif enh == 'ApocalypticEngineering' then
@@ -491,7 +491,7 @@ ERL0001 = Class(ACUUnit) {
             
             local torp = self:GetWeaponByLabel('TorpedoLauncher')
             torp:AddDamageMod(bp.TorpDamageMod)
-            torp:ChangeRateOfFire(torp:GetBlueprint().RateOfFire)
+            torp:ChangeRateOfFire(torp.Blueprint.RateOfFire)
             
             self:TogglePrimaryGun(bp.NewRoF)
         elseif enh == 'AdvancedWarheads' then
@@ -561,7 +561,7 @@ ERL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('EMPShot01', false)
             local wep = self:GetWeaponByLabel('EMPShot01')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
             
             self:SetPainterRange(enh, 0, true)
         elseif enh == 'AdjustedCrystalMatrix' then
@@ -599,7 +599,7 @@ ERL0001 = Class(ACUUnit) {
             
             self:SetWeaponEnabledByLabel('EMPShot02', false)
             local wep = self:GetWeaponByLabel('EMPShot02')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
             
@@ -636,7 +636,7 @@ ERL0001 = Class(ACUUnit) {
             
             self:SetWeaponEnabledByLabel('EMPShot03', false)
             local wep = self:GetWeaponByLabel('EMPShot03')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -701,7 +701,7 @@ ERL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('MLG02', false)
             local laser = self:GetWeaponByLabel('MLG02')
-            laser:ChangeMaxRadius(laser:GetBlueprint().MaxRadius)
+            laser:ChangeMaxRadius(laser.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -738,7 +738,7 @@ ERL0001 = Class(ACUUnit) {
             
             self:SetWeaponEnabledByLabel('MLG03', false)
             local laser = self:GetWeaponByLabel('MLG03')
-            laser:ChangeMaxRadius(laser:GetBlueprint().MaxRadius)
+            laser:ChangeMaxRadius(laser.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
             
@@ -862,7 +862,7 @@ ERL0001 = Class(ACUUnit) {
                 Buff.RemoveBuff(self, 'CybranIntelHealth1')
             end
 
-            local bpIntel = self:GetBlueprint().Intel
+            local bpIntel = self.Blueprint.Intel
             if ScenarioInfo.Options.OmniCheat ~= "on" or self:GetAIBrain().BrainType == 'Human' then
                 self:SetIntelRadius('Vision', bpIntel.VisionRadius)
                 self:SetIntelRadius('WaterVision', bpIntel.VisionRadius)
@@ -1084,14 +1084,14 @@ ERL0001 = Class(ACUUnit) {
     OnIntelEnabled = function(self, intel)
         ACUUnit.OnIntelEnabled(self, intel)
         if self:HasEnhancement('CloakingSubsystems') and self:IsIntelEnabled('Cloak') then
-            self:SetEnergyMaintenanceConsumptionOverride(self:GetBlueprint().Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
+            self:SetEnergyMaintenanceConsumptionOverride(self.Blueprint.Enhancements['CloakingSubsystems'].MaintenanceConsumptionPerSecondEnergy)
             self:SetMaintenanceConsumptionActive()
             if not self.IntelEffectsBag then
                 self.IntelEffectsBag = {}
                 self.CreateTerrainTypeEffects(self, self.IntelEffects.Cloak, 'FXIdle',  self:GetCurrentLayer(), nil, self.IntelEffectsBag)
             end            
         elseif self:HasEnhancement('ElectronicCountermeasures') and self:IsIntelEnabled('RadarStealth') and self:IsIntelEnabled('SonarStealth') then
-            self:SetEnergyMaintenanceConsumptionOverride(self:GetBlueprint().Enhancements['ElectronicCountermeasures'].MaintenanceConsumptionPerSecondEnergy)
+            self:SetEnergyMaintenanceConsumptionOverride(self.Blueprint.Enhancements['ElectronicCountermeasures'].MaintenanceConsumptionPerSecondEnergy)
             self:SetMaintenanceConsumptionActive()  
             if not self.IntelEffectsBag then 
                 self.IntelEffectsBag = {}

@@ -76,7 +76,7 @@ EEL0001 = Class(ACUUnit) {
         AutoOverCharge = Class(TDFOverchargeWeapon) {},
         TacMissile = Class(TIFCruiseMissileLauncher) {
             CreateProjectileAtMuzzle = function(self)
-                muzzle = self:GetBlueprint().RackBones[1].MuzzleBones[1]
+                muzzle = self.Blueprint.RackBones[1].MuzzleBones[1]
                 self.slider = CreateSlider(self.unit, 'Back_MissilePack_B02', 0, 0, 0, 0.25, true)
                 self.slider:SetGoal(0, 0, 0.22)
                 WaitFor(self.slider)
@@ -90,7 +90,7 @@ EEL0001 = Class(ACUUnit) {
         },
         TacNukeMissile = Class(TIFCruiseMissileLauncher) {
              CreateProjectileAtMuzzle = function(self)
-                muzzle = self:GetBlueprint().RackBones[1].MuzzleBones[1]
+                muzzle = self.Blueprint.RackBones[1].MuzzleBones[1]
                 self.slider = CreateSlider(self.unit, 'Back_MissilePack_B02', 0, 0, 0, 0.25, true)
                 self.slider:SetGoal(0, 0, 0.22)
                 WaitFor(self.slider)
@@ -115,7 +115,7 @@ EEL0001 = Class(ACUUnit) {
         ACUUnit.OnCreate(self)
         self:SetCapturable(false)
 
-        local bp = self:GetBlueprint()
+        local bp = self.Blueprint
         for _, v in bp.Display.WarpInEffect.HideBones do
             self:HideBone(v, true)
         end
@@ -133,7 +133,7 @@ EEL0001 = Class(ACUUnit) {
         self.Animator = CreateAnimator(self)
         self.Animator:SetPrecedence(0)
         if self.IdleAnim then
-            self.Animator:PlayAnim(self:GetBlueprint().Display.AnimationIdle, true)
+            self.Animator:PlayAnim(self.Blueprint.Display.AnimationIdle, true)
             for k, v in self.DisabledBones do
                 self.Animator:SetBoneEnabled(v, false)
             end
@@ -173,12 +173,12 @@ EEL0001 = Class(ACUUnit) {
     end,
 
     CreateBuildEffects = function(self, unitBeingBuilt, order)
-        local UpgradesFrom = unitBeingBuilt:GetBlueprint().General.UpgradesFrom
+        local UpgradesFrom = unitBeingBuilt.Blueprint.General.UpgradesFrom
         -- If we are assisting an upgrading unit, or repairing a unit, play seperate effects
         if (order == 'Repair' and not unitBeingBuilt:IsBeingBuilt()) or (UpgradesFrom and UpgradesFrom ~= 'none' and self:IsUnitState('Guarding'))then
-            EffectUtil.CreateDefaultBuildBeams(self, unitBeingBuilt, self:GetBlueprint().General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
+            EffectUtil.CreateDefaultBuildBeams(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)
         else
-            EffectUtil.CreateUEFCommanderBuildSliceBeams(self, unitBeingBuilt, self:GetBlueprint().General.BuildBones.BuildEffectBones, self.BuildEffectsBag)        
+            EffectUtil.CreateUEFCommanderBuildSliceBeams(self, unitBeingBuilt, self.Blueprint.General.BuildBones.BuildEffectBones, self.BuildEffectsBag)        
         end           
     end,
 
@@ -340,7 +340,7 @@ EEL0001 = Class(ACUUnit) {
         local energy = bp.ProductionPerSecondEnergy or 0
         local mass = bp.ProductionPerSecondMass or 0
         
-        local bpEcon = self:GetBlueprint().Economy
+        local bpEcon = self.Blueprint.Economy
         
         self:SetProductionPerSecondEnergy(energy + bpEcon.ProductionPerSecondEnergy or 0)
         self:SetProductionPerSecondMass(mass + bpEcon.ProductionPerSecondMass or 0)
@@ -352,9 +352,9 @@ EEL0001 = Class(ACUUnit) {
         local oc = self:GetWeaponByLabel('OverCharge')
         local aoc = self:GetWeaponByLabel('AutoOverCharge')
     
-        local wepRadius = radius or wep:GetBlueprint().MaxRadius
-        local ocRadius = radius or oc:GetBlueprint().MaxRadius
-        local aocRadius = radius or aoc:GetBlueprint().MaxRadius
+        local wepRadius = radius or wep.Blueprint.MaxRadius
+        local ocRadius = radius or oc.Blueprint.MaxRadius
+        local aocRadius = radius or aoc.Blueprint.MaxRadius
 
         -- Change Damage
         wep:AddDamageMod(damage)
@@ -410,7 +410,7 @@ EEL0001 = Class(ACUUnit) {
     CreateEnhancement = function(self, enh, removal)
         ACUUnit.CreateEnhancement(self, enh)
         
-        local bp = self:GetBlueprint().Enhancements[enh]
+        local bp = self.Blueprint.Enhancements[enh]
         if not bp then return end
         if enh == 'ImprovedEngineering' then
             self:RemoveBuildRestriction(categories.UEF * (categories.BUILTBYTIER2COMMANDER))
@@ -599,7 +599,7 @@ EEL0001 = Class(ACUUnit) {
 
             local gun = self:GetWeaponByLabel('FlameCannon')
             gun:AddDamageMod(bp.FlameDamageMod)
-            gun:ChangeMaxRadius(gun:GetBlueprint().MaxRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
         elseif enh == 'ApocalypticEngineering' then
@@ -701,7 +701,7 @@ EEL0001 = Class(ACUUnit) {
             
             local torp = self:GetWeaponByLabel('TorpedoLauncher')
             torp:AddDamageMod(bp.TorpDamageMod)
-            torp:ChangeRateOfFire(torp:GetBlueprint().RateOfFire)
+            torp:ChangeRateOfFire(torp.Blueprint.RateOfFire)
             
             self:TogglePrimaryGun(bp.DamageMod)
         elseif enh == 'AdvancedWarheads' then
@@ -771,7 +771,7 @@ EEL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('AntiMatterCannon', false)
             local gun = self:GetWeaponByLabel('AntiMatterCannon')
-            gun:ChangeMaxRadius(gun:GetBlueprint().MaxRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
         elseif enh == 'ImprovedParticleAccelerator' then
@@ -806,7 +806,7 @@ EEL0001 = Class(ACUUnit) {
             
             local gun = self:GetWeaponByLabel('AntiMatterCannon')
             gun:AddDamageMod(bp.AntiMatterDamageMod)
-            gun:ChangeDamageRadius(gun:GetBlueprint().DamageRadius)
+            gun:ChangeDamageRadius(gun.Blueprint.DamageRadius)
 
             self:TogglePrimaryGun(bp.DamageMod)
         elseif enh == 'EnhancedMagBottle' then
@@ -843,8 +843,8 @@ EEL0001 = Class(ACUUnit) {
 
             local gun = self:GetWeaponByLabel('AntiMatterCannon')
             gun:AddDamageMod(bp.AntiMatterDamageMod)
-            gun:ChangeDamageRadius(gun:GetBlueprint().DamageRadius)
-            gun:ChangeMaxRadius(gun:GetBlueprint().MaxRadius)
+            gun:ChangeDamageRadius(gun.Blueprint.DamageRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -883,7 +883,7 @@ EEL0001 = Class(ACUUnit) {
 
             self:SetWeaponEnabledByLabel('GatlingEnergyCannon', false)
             local gun = self:GetWeaponByLabel('GatlingEnergyCannon')
-            gun:ChangeMaxRadius(gun:GetBlueprint().MaxRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
         elseif enh == 'AutomaticBarrelStabalizers' then
@@ -918,7 +918,7 @@ EEL0001 = Class(ACUUnit) {
 
             local gun = self:GetWeaponByLabel('GatlingEnergyCannon')
             gun:AddDamageMod(bp.GatlingDamageMod)
-            gun:ChangeMaxRadius(gun:GetBlueprint().MaxRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.MaxRadius)
 
             self:SetPainterRange(enh, 0, true)
 
@@ -953,7 +953,7 @@ EEL0001 = Class(ACUUnit) {
 
             local gun = self:GetWeaponByLabel('GatlingEnergyCannon')
             gun:AddDamageMod(bp.GatlingDamageMod)
-            gun:ChangeMaxRadius(gun:GetBlueprint().GatlingMaxRadius)
+            gun:ChangeMaxRadius(gun.Blueprint.GatlingMaxRadius)
 
             self:SetPainterRange(enh, 0, true)
             
@@ -1054,7 +1054,7 @@ EEL0001 = Class(ACUUnit) {
                 Buff.RemoveBuff(self, 'UEFIntelHealth1')
             end
         
-            local bpIntel = self:GetBlueprint().Intel
+            local bpIntel = self.Blueprint.Intel
 
             if ScenarioInfo.Options.OmniCheat ~= "on" or self:GetAIBrain().BrainType == 'Human' then
                 self:SetIntelRadius('Vision', bpIntel.VisionRadius)
@@ -1169,14 +1169,14 @@ EEL0001 = Class(ACUUnit) {
             
             self:SetWeaponEnabledByLabel('ClusterMissiles', false)
             local cluster = self:GetWeaponByLabel('ClusterMissiles')
-            cluster:ChangeMaxRadius(cluster:GetBlueprint().MaxRadius)
+            cluster:ChangeMaxRadius(cluster.Blueprint.MaxRadius)
             
             self:SetPainterRange(enh, 0, true)
             
             local wep = self:GetWeaponByLabel('TacMissile')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
             local wep2 = self:GetWeaponByLabel('TacNukeMissile')
-            wep2:ChangeMaxRadius(wep2:GetBlueprint().MaxRadius)
+            wep2:ChangeMaxRadius(wep2.Blueprint.MaxRadius)
         elseif enh == 'TacticalMissilePack' then
             if not Buffs['UEFMissileHealth2'] then
                 BuffBlueprint {
@@ -1204,7 +1204,7 @@ EEL0001 = Class(ACUUnit) {
             self:AddCommandCap('RULEUCC_SiloBuildTactical')
             self:SetWeaponEnabledByLabel('TacMissile', true)
             local wep = self:GetWeaponByLabel('TacMissile')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
             
             -- Buff Cluster Missiles
             local cluster = self:GetWeaponByLabel('ClusterMissiles')
@@ -1258,7 +1258,7 @@ EEL0001 = Class(ACUUnit) {
             self:AddCommandCap('RULEUCC_SiloBuildNuke')
             self:SetWeaponEnabledByLabel('TacNukeMissile', true)
             local wep = self:GetWeaponByLabel('TacNukeMissile')
-            wep:ChangeMaxRadius(wep:GetBlueprint().MaxRadius)
+            wep:ChangeMaxRadius(wep.Blueprint.MaxRadius)
             
             -- Buff Cluster Missiles
             local cluster = self:GetWeaponByLabel('ClusterMissiles')
