@@ -1,24 +1,13 @@
 -----------------------------------------------------------------
 -- File     :  /lua/ai/AIEconomicBuilders.lua
 -- Summary  : Default economic builders for skirmish
--- Copyright © 2005 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2005 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
 
-local BBTmplFile = '/lua/basetemplates.lua'
-local BuildingTmpl = 'BuildingTemplates'
-local BaseTmpl = 'BaseTemplates'
-local BaseTmpl = 'ExpansionBaseTemplates'
-local Adj2x2Tmpl = 'Adjacency2x2'
 local UCBC = '/lua/editor/UnitCountBuildConditions.lua'
 local MIBC = '/lua/editor/MiscBuildConditions.lua'
-local MABC = '/lua/editor/MarkerBuildConditions.lua'
-local IBC = '/lua/editor/InstantBuildConditions.lua'
-local OAUBC = '/lua/editor/OtherArmyUnitCountBuildConditions.lua'
 local EBC = '/lua/editor/EconomyBuildConditions.lua'
-local PCBC = '/lua/editor/PlatoonCountBuildConditions.lua'
 local SAI = '/lua/ScenarioPlatoonAI.lua'
-local TBC = '/lua/editor/ThreatBuildConditions.lua'
-local PlatoonFile = '/lua/platoon.lua'
 local BOUC = '/mods/BlackOpsFAF-ACUs/lua/ACUsUpgradeConditions.lua'
 
 do

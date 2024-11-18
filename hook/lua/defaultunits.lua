@@ -1,15 +1,16 @@
 local oldACUUnit = ACUUnit
 
-ACUUnit = Class(oldACUUnit) {    
+---@class ACUUnit : Unit
+ACUUnit = Class(oldACUUnit) {
     updateBuildRestrictions = function(self)
-        local aiBrain = self:GetAIBrain()
+        local aiBrain = self.AIBrain
         local factionCategory = categories[string.upper(__blueprints[self.UnitId].General.FactionName)]
         -- Sanity check.
         if not factionCategory then
             return
         end
         self:AddBuildRestriction(categories.SUPPORTFACTORY)
-        
+
         local upgradeNames = {
             'ImprovedEngineering',
             'CombatEngineering',
@@ -20,11 +21,11 @@ ACUUnit = Class(oldACUUnit) {
         }
 
         -- Check for the existence of HQs
-        for i, researchType in ipairs({categories.LAND, categories.AIR, categories.NAVAL}) do
+        for _, researchType in ipairs({categories.LAND, categories.AIR, categories.NAVAL}) do
             -- If there is a research station of the appropriate type, enable support factory construction
-            for id, unit in aiBrain:GetListOfUnits(categories.RESEARCH * categories.TECH2 * factionCategory * researchType, false, true) do
+            for _, unit in aiBrain:GetListOfUnits(categories.RESEARCH * categories.TECH2 * factionCategory * researchType, false, true) do
                 if not unit.Dead and not unit:IsBeingBuilt() then
-                    for key, title in upgradeNames do
+                    for _, title in upgradeNames do
                         if self:HasEnhancement(title) then
                             self:RemoveBuildRestriction(categories.TECH2 * categories.SUPPORTFACTORY * factionCategory * researchType)
                             break
@@ -33,7 +34,7 @@ ACUUnit = Class(oldACUUnit) {
                     break
                 end
             end
-            for id, unit in aiBrain:GetListOfUnits(categories.RESEARCH * categories.TECH3 * factionCategory * researchType, false, true) do
+            for _, unit in aiBrain:GetListOfUnits(categories.RESEARCH * categories.TECH3 * factionCategory * researchType, false, true) do
                 if not unit.Dead and not unit:IsBeingBuilt() then
                     -- Special case for the commander, since its engineering upgrades are implemented using build restrictions
                     for key, title in upgradeNames do

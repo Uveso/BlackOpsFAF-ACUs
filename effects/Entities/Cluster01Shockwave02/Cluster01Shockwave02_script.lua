@@ -1,5 +1,6 @@
 local EmitterProjectile = import('/lua/sim/defaultprojectiles.lua').EmitterProjectile
 
+---@class Cluster01Shockwave01 : EmitterProjectile
 Cluster01Shockwave02 = Class(EmitterProjectile) {
     FxTrails = {'/effects/emitters/nuke_blanket_smoke_01_emit.bp', },
     FxTrailScale = 0.015625,

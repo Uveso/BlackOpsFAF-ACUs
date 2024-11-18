@@ -1,3 +1,8 @@
+---@param strArmy string
+---@param strUnit string
+---@return nil
+---@return Unit
+---@return unknown
 function CreateArmyUnit(strArmy,strUnit)
     local tblUnit = FindUnit(strUnit,Scenario.Armies[strArmy].Units)
     local brain = GetArmyBrain(strArmy)
