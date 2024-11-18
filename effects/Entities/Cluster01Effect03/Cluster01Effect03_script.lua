@@ -15,7 +15,7 @@ Cluster01Effect03 = Class(NullShell) {
     end,
 
     EffectThread = function(self)
-        local army = self:GetArmy()
+        local army = self.Army
         for _, v in EffectTemplate.TNukeHeadEffects03 do
             CreateAttachedEmitter(self, -1, army, v):ScaleEmitter(0.03125)
         end

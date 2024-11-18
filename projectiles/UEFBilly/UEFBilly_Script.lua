@@ -21,7 +21,7 @@ UEFBilly = Class(TIFMissileNuke) {
     
     -- Tactical nuke has different flight path
     MovementThread = function(self)   
-        local army = self:GetArmy()
+        local army = self.Army
         local target = self:GetTrackingTarget()
         local launcher = self:GetLauncher()            
         self.CreateEffects(self, self.InitialEffects, army, 1)      

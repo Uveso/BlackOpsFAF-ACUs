@@ -121,15 +121,15 @@ EMPWeapon = Class(CCannonMolecularWeapon) {
                 end
                 self.unit.EMPArrayEffects01 = {}
             end
-            table.insert(self.unit.EMPArrayEffects01, AttachBeamEntityToEntity(self.unit, 'EMP_Array_Beam_01', self.unit, 'EMP_Array_Muzzle_01', self.unit:GetArmy(), '/mods/BlackOpsFAF-ACUs/effects/emitters/cemparraybeam02_emit.bp'))
-            table.insert(self.unit.EMPArrayEffects01, AttachBeamEntityToEntity(self.unit, 'EMP_Array_Beam_02', self.unit, 'EMP_Array_Muzzle_02', self.unit:GetArmy(), '/mods/BlackOpsFAF-ACUs/effects/emitters/cemparraybeam02_emit.bp'))
-            table.insert(self.unit.EMPArrayEffects01, AttachBeamEntityToEntity(self.unit, 'EMP_Array_Beam_03', self.unit, 'EMP_Array_Muzzle_03', self.unit:GetArmy(), '/mods/BlackOpsFAF-ACUs/effects/emitters/cemparraybeam02_emit.bp'))
-            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_01', self.unit:GetArmy(), '/effects/emitters/microwave_laser_flash_01_emit.bp'):ScaleEmitter(0.05))
-            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_01', self.unit:GetArmy(), '/effects/emitters/microwave_laser_muzzle_01_emit.bp'):ScaleEmitter(0.05))
-            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_02', self.unit:GetArmy(), '/effects/emitters/microwave_laser_flash_01_emit.bp'):ScaleEmitter(0.05))
-            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_02', self.unit:GetArmy(), '/effects/emitters/microwave_laser_muzzle_01_emit.bp'):ScaleEmitter(0.05))
-            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_03', self.unit:GetArmy(), '/effects/emitters/microwave_laser_flash_01_emit.bp'):ScaleEmitter(0.05))
-            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_03', self.unit:GetArmy(), '/effects/emitters/microwave_laser_muzzle_01_emit.bp'):ScaleEmitter(0.05))
+            table.insert(self.unit.EMPArrayEffects01, AttachBeamEntityToEntity(self.unit, 'EMP_Array_Beam_01', self.unit, 'EMP_Array_Muzzle_01', self.unit.Army, '/mods/BlackOpsFAF-ACUs/effects/emitters/cemparraybeam02_emit.bp'))
+            table.insert(self.unit.EMPArrayEffects01, AttachBeamEntityToEntity(self.unit, 'EMP_Array_Beam_02', self.unit, 'EMP_Array_Muzzle_02', self.unit.Army, '/mods/BlackOpsFAF-ACUs/effects/emitters/cemparraybeam02_emit.bp'))
+            table.insert(self.unit.EMPArrayEffects01, AttachBeamEntityToEntity(self.unit, 'EMP_Array_Beam_03', self.unit, 'EMP_Array_Muzzle_03', self.unit.Army, '/mods/BlackOpsFAF-ACUs/effects/emitters/cemparraybeam02_emit.bp'))
+            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_01', self.unit.Army, '/effects/emitters/microwave_laser_flash_01_emit.bp'):ScaleEmitter(0.05))
+            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_01', self.unit.Army, '/effects/emitters/microwave_laser_muzzle_01_emit.bp'):ScaleEmitter(0.05))
+            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_02', self.unit.Army, '/effects/emitters/microwave_laser_flash_01_emit.bp'):ScaleEmitter(0.05))
+            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_02', self.unit.Army, '/effects/emitters/microwave_laser_muzzle_01_emit.bp'):ScaleEmitter(0.05))
+            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_03', self.unit.Army, '/effects/emitters/microwave_laser_flash_01_emit.bp'):ScaleEmitter(0.05))
+            table.insert(self.unit.EMPArrayEffects01, CreateAttachedEmitter(self.unit, 'EMP_Array_Beam_03', self.unit.Army, '/effects/emitters/microwave_laser_muzzle_01_emit.bp'):ScaleEmitter(0.05))
             self:ForkThread(self.ArrayEffectsCleanup)
         end
     end,
@@ -157,7 +157,7 @@ PDLaserGrid2 = Class(DefaultBeamWeapon) {
     ---@param self PDLaserGrid2
     PlayFxWeaponUnpackSequence = function(self)
         if not self.ContBeamOn then
-            local army = self.unit:GetArmy()
+            local army = self.unit.Army
             local bp = self.Blueprint
             for _, v in self.FxUpackingChargeEffects do
                 for ek, ev in bp.RackBones[self.CurrentRackSalvoNumber].MuzzleBones do
@@ -186,7 +186,7 @@ AeonACUPhasonLaser = Class(DefaultBeamWeapon) {
     ---@param self AeonACUPhasonLaser
     PlayFxWeaponUnpackSequence = function(self)
         if not self.ContBeamOn then
-            local army = self.unit:GetArmy()
+            local army = self.unit.Army
             local bp = self.Blueprint
             for _, v in self.FxUpackingChargeEffects do
                 for ek, ev in bp.RackBones[self.CurrentRackSalvoNumber].MuzzleBones do

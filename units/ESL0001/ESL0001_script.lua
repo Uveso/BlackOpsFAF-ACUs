@@ -215,7 +215,7 @@ ESL0001 = Class(ACUUnit) {
         local boneLocation = self:GetPosition(boneLabel)
         local unitID = 'esb000' .. unit
 
-        local lambdaUnit = CreateUnit(unitID, self:GetArmy(),
+        local lambdaUnit = CreateUnit(unitID, self.Army,
                                       boneLocation[1], boneLocation[2], boneLocation[3],
                                       orientation[1], orientation[2], orientation[3], orientation[4], 'Land')
 
@@ -480,7 +480,7 @@ ESL0001 = Class(ACUUnit) {
                 self.RegenThreadHandler = nil
             end
             self.RegenThreadHandler = self:ForkThread(self.RegenBuffThread, enh)
-            table.insert(self.RegenFieldFXBag, CreateAttachedEmitter(self, 'XSL0001', self:GetArmy(), '/effects/emitters/seraphim_regenerative_aura_01_emit.bp'))
+            table.insert(self.RegenFieldFXBag, CreateAttachedEmitter(self, 'XSL0001', self.Army, '/effects/emitters/seraphim_regenerative_aura_01_emit.bp'))
 
             -- Affect the ACU
             Buff.ApplyBuff(self, 'SERAPHIMACUT2BuildCombat')
@@ -567,7 +567,7 @@ ESL0001 = Class(ACUUnit) {
                 self.RegenThreadHandler = nil
             end
             self.RegenThreadHandler = self:ForkThread(self.RegenBuffThread, enh)
-            table.insert(self.RegenFieldFXBag, CreateAttachedEmitter(self, 'XSL0001', self:GetArmy(), '/effects/emitters/seraphim_regenerative_aura_01_emit.bp'))
+            table.insert(self.RegenFieldFXBag, CreateAttachedEmitter(self, 'XSL0001', self.Army, '/effects/emitters/seraphim_regenerative_aura_01_emit.bp'))
 
             -- Affect the ACU
             Buff.ApplyBuff(self, 'SERAPHIMACUT3BuildCombat')

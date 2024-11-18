@@ -27,7 +27,7 @@ Cluster01EffectController01 = Class(NullShell) {
     end,
 
     EffectThread = function(self)
-        local army = self:GetArmy()
+        local army = self.Army
         local position = self:GetPosition()
 
         -- Create full-screen glow flash

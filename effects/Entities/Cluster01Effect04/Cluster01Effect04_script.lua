@@ -15,7 +15,7 @@ Cluster01Effect04 = Class(NullShell) {
     end,
 
     EffectThread = function(self)
-        local army = self:GetArmy()
+        local army = self.Army
 
 
         WaitSeconds(4)

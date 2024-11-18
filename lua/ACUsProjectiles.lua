@@ -27,7 +27,7 @@ EmitterProjectile = Class(Projectile) {
     OnCreate = function(self)
         Projectile.OnCreate(self)
 
-        local army = self:GetArmy()
+        local army = self.Army
         for _, i in self.FxTrails do
             CreateEmitterOnEntity(self, army, i):ScaleEmitter(self.FxTrailScale):OffsetEmitter(0, 0, self.FxTrailOffset)
         end
@@ -43,7 +43,7 @@ SinglePolyTrailProjectile = Class(EmitterProjectile) {
     OnCreate = function(self)
         EmitterProjectile.OnCreate(self)
         if self.PolyTrail ~= '' then
-            CreateTrail(self, -1, self:GetArmy(), self.PolyTrail):OffsetEmitter(0, 0, self.PolyTrailOffset)
+            CreateTrail(self, -1, self.Army, self.PolyTrail):OffsetEmitter(0, 0, self.PolyTrailOffset)
         end
     end,
 }
@@ -59,7 +59,7 @@ MultiPolyTrailProjectile = Class(EmitterProjectile) {
         EmitterProjectile.OnCreate(self)
         if self.PolyTrails then
             local NumPolyTrails = table.getn(self.PolyTrails)
-            local army = self:GetArmy()
+            local army = self.Army
 
             if self.RandomPolyTrails ~= 0 then
                 local index = nil
@@ -91,7 +91,7 @@ MultiCompositeEmitterProjectile = Class(MultiPolyTrailProjectile) {
     OnCreate = function(self)
         MultiPolyTrailProjectile.OnCreate(self)
         local beam = nil
-        local army = self:GetArmy()
+        local army = self.Army
         for _, v in self.Beams do
             CreateBeamEmitterOnEntity(self, -1, army, v)
         end
@@ -217,7 +217,7 @@ UEFACUAntiMatterProjectile03 = Class(MultiCompositeEmitterProjectile) {
     FxShieldHitScale = 1,
 
     OnImpact = function(self, targetType, targetEntity)
-        local army = self:GetArmy()
+        local army = self.Army
         if targetType == 'Terrain' then
             CreateDecal(self:GetPosition(), util.GetRandomFloat(0.0,6.28), 'nuke_scorch_001_normals', '', 'Alpha Normals', self.FxSplatScale, self.FxSplatScale, 150, 30, army)
             CreateDecal(self:GetPosition(), util.GetRandomFloat(0.0,6.28), 'nuke_scorch_002_albedo', '', 'Albedo', self.FxSplatScale * 2, self.FxSplatScale * 2, 150, 30, army)
@@ -391,7 +391,7 @@ InvisoProjectile01 = Class(MultiCompositeEmitterProjectile) {
     FxShieldHitScale = 0.5,
 
     OnImpact = function(self, targetType, targetEntity)
-        local army = self:GetArmy()
+        local army = self.Army
 
         local blanketSides = 6
         local blanketAngle = (2 * math.pi) / blanketSides
@@ -426,7 +426,7 @@ InvisoProjectile02 = Class(MultiCompositeEmitterProjectile) {
     FxShieldHitScale = 0.75,
 
     OnImpact = function(self, targetType, targetEntity)
-        local army = self:GetArmy()
+        local army = self.Army
 
         local blanketSides = 9
         local blanketAngle = (2 * math.pi) / blanketSides
@@ -461,7 +461,7 @@ InvisoProjectile03 = Class(MultiCompositeEmitterProjectile) {
     FxShieldHitScale = 0.75,
 
     OnImpact = function(self, targetType, targetEntity)
-        local army = self:GetArmy()
+        local army = self.Army
 
         local blanketSides = 12
         local blanketAngle = (2 * math.pi) / blanketSides
