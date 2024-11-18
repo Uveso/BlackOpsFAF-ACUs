@@ -1,8 +1,7 @@
---
--- Terran CDR Nuke
---
 local TIFMissileNuke = import('/lua/terranprojectiles.lua').TIFMissileNuke
 
+-- Terran CDR Nuke
+---@class UEFBilly : TIFMissileNuke
 UEFBilly = Class(TIFMissileNuke) {
 
     BeamName = '/effects/emitters/missile_exhaust_fire_beam_06_emit.bp',
@@ -12,14 +11,16 @@ UEFBilly = Class(TIFMissileNuke) {
         '/effects/emitters/nuke_munition_launch_trail_05_emit.bp',
     },
     ThrustEffects = {'/effects/emitters/nuke_munition_launch_trail_04_emit.bp',},    
-    
+
+    ---@param self UEFBilly
     OnCreate = function(self)
         TIFMissileNuke.OnCreate(self)
         self.effectEntityPath = '/effects/Entities/UEFNukeEffectController01/UEFNukeEffectController01_proj.bp'
         self:LauncherCallbacks()
     end,
-    
+
     -- Tactical nuke has different flight path
+    ---
     MovementThread = function(self)   
         local army = self.Army
         local target = self:GetTrackingTarget()
