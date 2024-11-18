@@ -5,9 +5,10 @@
 
 -- Summary  :  UEF Heavy Plasma Gatling Cannon Projectile script, XEB2306
 
--- Copyright © 2007 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2007 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
+local UEFHeavyPlasmaGatlingCannon02 = import('/mods/BlackOpsFAF-ACUs/lua/ACUsProjectiles.lua').UEFHeavyPlasmaGatlingCannon01
 
-UEFHeavyPlasmaGatlingCannon02 = Class(import('/mods/BlackOpsFAF-ACUs/lua/ACUsProjectiles.lua').UEFHeavyPlasmaGatlingCannon02) {
-}
+---@class UEFHeavyPlasmaGatlingCannon02 : UEFHeavyPlasmaGatlingCannon01
+UEFHeavyPlasmaGatlingCannon02 = Class(UEFHeavyPlasmaGatlingCannon02) {}
 TypeClass = UEFHeavyPlasmaGatlingCannon02

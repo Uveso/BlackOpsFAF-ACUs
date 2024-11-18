@@ -5,9 +5,10 @@
 
 -- Summary  :  ChronatronCannon Projectile script, Seraphim commander overcharge, XSL0001
 
--- Copyright © 2007 Gas Powered Games, Inc.  All rights reserved.
+-- Copyright ï¿½ 2007 Gas Powered Games, Inc.  All rights reserved.
 -----------------------------------------------------------------
+local SOmegaCannonOverCharge = import('/mods/BlackOpsFAF-ACUs/lua/ACUsProjectiles.lua').SOmegaCannonOverCharge
 
-OmegaOverCharge01 = Class(import('/mods/BlackOpsFAF-ACUs/lua/ACUsProjectiles.lua').SOmegaCannonOverCharge) {
-}
+--- OmegaOverCharge01 : SOmegaCannonOverCharge
+OmegaOverCharge01 = Class(SOmegaCannonOverCharge) {}
 TypeClass = OmegaOverCharge01

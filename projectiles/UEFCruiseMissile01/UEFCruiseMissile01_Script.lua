@@ -1,9 +1,7 @@
---
--- Terran Land-Based Cruise Missile
---
 local UEFCruiseMissile01Projectile = import('/mods/BlackopsEXUnits/lua/ACUsProjectiles.lua').UEFCruiseMissile01Projectile
-local Explosion = import('/lua/defaultexplosions.lua')
 
+-- Terran Land-Based Cruise Missile
+---@class UEFCruiseMissile01 : UEFCruiseMissile01Projectile
 UEFCruiseMissile01 = Class(UEFCruiseMissile01Projectile) {
 
     FxAirUnitHitScale = 1.5,
