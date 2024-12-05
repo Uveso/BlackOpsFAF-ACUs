@@ -41,7 +41,7 @@ SeraACUMissile = Class(SIFLaanseTacticalMissileLauncher) {
         else
             self.CurrentRack = self.CurrentRack + 1
         end
-        SIFLaanseTacticalMissileLauncher.CreateProjectileAtMuzzle(self, muzzle)
+        return SIFLaanseTacticalMissileLauncher.CreateProjectileAtMuzzle(self, muzzle)
     end,
 
     ---@param self SeraACUMissile
