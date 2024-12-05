@@ -1473,7 +1473,7 @@ UnitBlueprint {
     SelectionSizeZ = 0.6,
     SelectionThickness = 0.9,
     SelectionYOffset = 0,
-    SizeX = 0.18,
+    SizeX = 1,
     SizeY = 2,
     SizeZ = 0.7,
     StrategicIconName = 'icon_commander_generic',
