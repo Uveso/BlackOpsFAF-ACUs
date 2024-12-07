@@ -1,7 +1,7 @@
 v21 (not released)
 
 - Fixed the hitboxes of ACUs, especially the Aeon hitbox, which was far too small.
-- Reduced damage for (Aeon) QuantumMaelstrom T1 7->1.5, T2 17->6, T3 32->16
+- Reduced damage for (Aeon) QuantumMaelstrom T1 7->0.6, T2 17->6, T3 32->16
 - Fixed tactical missile (Seraphim) not counting silo amount of missiles
 
 *************************************************************************************************************************************
