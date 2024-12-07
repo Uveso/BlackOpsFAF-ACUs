@@ -1343,7 +1343,7 @@ UnitBlueprint {
             Name = 'Quantum Instability Enhancer (T4)',
             Prerequisite = 'DistortionAmplifier',
             NewHealth = 15000,
-            MaelstromDamage = 9,
+            MaelstromDamage = 16,
             MaelstromRadius = 30,
             ShowBones = {
                 'DamagePack_LArm',
@@ -2413,7 +2413,7 @@ UnitBlueprint {
             BallisticArc = 'RULEUBA_None',
             CanFireFromTransport = true,
             CollideFriendly = false,
-            Damage = 3,
+            Damage = 1.5,
             DamageFriendly = false,
             DamageRadius = 22,
             DamageType = 'Overcharge',
