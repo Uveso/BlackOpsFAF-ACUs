@@ -90,7 +90,6 @@ MultiCompositeEmitterProjectile = Class(MultiPolyTrailProjectile) {
     ---@param self MultiCompositeEmitterProjectile
     OnCreate = function(self)
         MultiPolyTrailProjectile.OnCreate(self)
-        local beam = nil
         local army = self.Army
         for _, v in self.Beams do
             CreateBeamEmitterOnEntity(self, -1, army, v)
@@ -401,8 +400,7 @@ InvisoProjectile01 = Class(MultiCompositeEmitterProjectile) {
         for i = 0, blanketSides - 1 do
             local blanketX = math.sin(i * blanketAngle)
             local blanketZ = math.cos(i * blanketAngle)
-            self:CreateProjectile('/effects/entities/EffectProtonAmbient01/EffectProtonAmbient01_proj.bp', blanketX, 0.25, blanketZ, blanketX, 0, blanketZ)
-                :SetVelocity(blanketVelocity):SetAcceleration(-0.3)
+            self:CreateProjectile('/effects/entities/EffectProtonAmbient01/EffectProtonAmbient01_proj.bp', blanketX, 0.25, blanketZ, blanketX, 0, blanketZ):SetVelocity(blanketVelocity):SetAcceleration(-0.3)
         end
 
         MultiCompositeEmitterProjectile.OnImpact(self, targetType, targetEntity)
@@ -426,18 +424,14 @@ InvisoProjectile02 = Class(MultiCompositeEmitterProjectile) {
     FxShieldHitScale = 0.75,
 
     OnImpact = function(self, targetType, targetEntity)
-        local army = self.Army
-
         local blanketSides = 9
         local blanketAngle = (2 * math.pi) / blanketSides
-        local blanketStrength = 0.75
         local blanketVelocity = 6.25
 
         for i = 0, blanketSides - 1 do
             local blanketX = math.sin(i * blanketAngle)
             local blanketZ = math.cos(i * blanketAngle)
-            self:CreateProjectile('/effects/entities/EffectProtonAmbient01/EffectProtonAmbient01_proj.bp', blanketX, 0.25, blanketZ, blanketX, 0, blanketZ)
-                :SetVelocity(blanketVelocity):SetAcceleration(-0.3)
+            self:CreateProjectile('/effects/entities/EffectProtonAmbient01/EffectProtonAmbient01_proj.bp', blanketX, 0.25, blanketZ, blanketX, 0, blanketZ):SetVelocity(blanketVelocity):SetAcceleration(-0.3)
         end
 
         MultiCompositeEmitterProjectile.OnImpact(self, targetType, targetEntity)
@@ -471,8 +465,7 @@ InvisoProjectile03 = Class(MultiCompositeEmitterProjectile) {
         for i = 0, blanketSides - 1 do
             local blanketX = math.sin(i * blanketAngle)
             local blanketZ = math.cos(i * blanketAngle)
-            self:CreateProjectile('/effects/entities/EffectProtonAmbient01/EffectProtonAmbient01_proj.bp', blanketX, 0.5, blanketZ, blanketX, 0, blanketZ)
-                :SetVelocity(blanketVelocity):SetAcceleration(-0.3)
+            self:CreateProjectile('/effects/entities/EffectProtonAmbient01/EffectProtonAmbient01_proj.bp', blanketX, 0.5, blanketZ, blanketX, 0, blanketZ):SetVelocity(blanketVelocity):SetAcceleration(-0.3)
         end
 
         MultiCompositeEmitterProjectile.OnImpact(self, targetType, targetEntity)
