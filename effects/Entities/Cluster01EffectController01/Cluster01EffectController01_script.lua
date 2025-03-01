@@ -18,31 +18,31 @@ local MathPi = math.pi
 local TrashBagAdd = TrashBag.Add
 local ForkThread = ForkThread
 
-
 ---@class Cluster01EffectController01 : NullShell
 Cluster01EffectController01 = Class(NullShell) {
 
     ---@param self Cluster01EffectController01
-    ---@param Data table unused
-    PassData = function(self, Data)
+    PassData = function(self)
         self:CreateNuclearExplosion()
     end,
 
     ---@param self Cluster01EffectController01
     CreateNuclearExplosion = function(self)
-        local myBlueprint = self.Blueprint
+        local bp = self.Blueprint
+        local trash = self.Trash
 
         -- Play the "NukeExplosion" sound
-        if myBlueprint.Audio.NukeExplosion then
-            self:PlaySound(myBlueprint.Audio.NukeExplosion)
+        if bp.Audio.NukeExplosion then
+            self:PlaySound(bp.Audio.NukeExplosion)
         end
 
-        self:ForkThread(self.EffectThread)
+        TrashBagAdd(trash, ForkThread(self.EffectThread, self))
     end,
 
     ---@param self Cluster01EffectController01
     EffectThread = function(self)
         local army = self.Army
+        local trash = self.Trash
 
         -- Create full-screen glow flash
         WaitSeconds(0.015625)
@@ -60,9 +60,10 @@ Cluster01EffectController01 = Class(NullShell) {
         end
 
         self:CreateInitialFireballSmokeRing()
-        self:ForkThread(self.CreateOuterRingWaveSmokeRing)
-        self:ForkThread(self.CreateHeadConvectionSpinners)
-        self:ForkThread(self.CreateFlavorPlumes)
+
+        TrashBagAdd(trash, ForkThread(self.CreateOuterRingWaveSmokeRing, self))
+        TrashBagAdd(trash, ForkThread(self.CreateHeadConvectionSpinners, self))
+        TrashBagAdd(trash, ForkThread(self.CreateFlavorPlumes, self))
 
         WaitSeconds(0.034375)
     end,
@@ -70,22 +71,21 @@ Cluster01EffectController01 = Class(NullShell) {
     ---@param self Cluster01EffectController01
     CreateInitialFireballSmokeRing = function(self)
         local sides = 12
-        local angle = (2 * math.pi) / sides
+        local angle = (2 * MathPi) / sides
         local velocity = 0.41667
         local OffsetMod = 0.25
 
         for i = 0, sides - 1 do
             local X = MathSin(i * angle)
             local Z = MathCos(i * angle)
-            self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Shockwave01/Cluster01Shockwave01_proj.bp', X * OffsetMod, 0.09375, Z * OffsetMod, X, 0, Z)
-                :SetVelocity(velocity):SetAcceleration(-0.015625)
+            self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Shockwave01/Cluster01Shockwave01_proj.bp', X * OffsetMod, 0.09375, Z * OffsetMod, X, 0, Z):SetVelocity(velocity):SetAcceleration(-0.015625)
         end
     end,
 
     ---@param self Cluster01EffectController01
     CreateOuterRingWaveSmokeRing = function(self)
         local sides = 32
-        local angle = (2 * math.pi) / sides
+        local angle = (2 * MathPi) / sides
         local velocity = 0.21875
         local OffsetMod = 0.25
         local projectiles = {}
@@ -93,14 +93,13 @@ Cluster01EffectController01 = Class(NullShell) {
         for i = 0, sides - 1 do
             local X = MathSin(i * angle)
             local Z = MathCos(i * angle)
-            local proj =  self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Shockwave02/Cluster01Shockwave02_proj.bp', X * OffsetMod, 0.15625, Z * OffsetMod, X, 0, Z)
-                :SetVelocity(velocity)
+            local proj =  self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Shockwave02/Cluster01Shockwave02_proj.bp', X * OffsetMod, 0.15625, Z * OffsetMod, X, 0, Z):SetVelocity(velocity)
             table.insert(projectiles, proj)
         end
         WaitSeconds(0.1875)
 
         -- Slow projectiles down to normal speed
-        for k, v in projectiles do
+        for _, v in projectiles do
             v:SetAcceleration(-0.0140625)
         end
     end,
@@ -108,7 +107,7 @@ Cluster01EffectController01 = Class(NullShell) {
     ---@param self Cluster01EffectController01
     CreateFlavorPlumes = function(self)
         local numProjectiles = 8
-        local angle = (2 * math.pi) / numProjectiles
+        local angle = (2 * MathPi) / numProjectiles
         local angleInitial = RandomFloat(0, angle)
         local angleVariation = angle * 0.75
         local projectiles = {}
@@ -143,7 +142,7 @@ Cluster01EffectController01 = Class(NullShell) {
     ---@param self Cluster01EffectController01
     CreateHeadConvectionSpinners = function(self)
         local sides = 10
-        local angle = (2 * math.pi) / sides
+        local angle = (2 * MathPi) / sides
         local HeightOffset = -0.15625
         local velocity = 0.03125
         local OffsetMod = 0.3125
@@ -152,8 +151,7 @@ Cluster01EffectController01 = Class(NullShell) {
         for i = 0, sides - 1 do
             local x = MathSin(i * angle) * OffsetMod
             local z = MathCos(i * angle) * OffsetMod
-            local proj = self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Effect03/Cluster01Effect03_proj.bp', x, HeightOffset, z, x, 0, z)
-                :SetVelocity(velocity)
+            local proj = self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Effect03/Cluster01Effect03_proj.bp', x, HeightOffset, z, x, 0, z):SetVelocity(velocity)
             table.insert(projectiles, proj)
         end
 
@@ -177,7 +175,7 @@ Cluster01EffectController01 = Class(NullShell) {
         end
 
         local sides = 10
-        local angle = (2 * math.pi) / sides
+        local angle = (2 * MathPi) / sides
         local outer_lower_limit = 0.0625
         local outer_upper_limit = 0.0625
         local outer_lower_height = 0.0625
@@ -190,8 +188,7 @@ Cluster01EffectController01 = Class(NullShell) {
             local x = MathSin(i * angle + RandomFloat(-angle / 2, angle / 4)) * magnitude
             local z = MathCos(i * angle + RandomFloat(-angle / 2, angle / 4)) * magnitude
             local velocity = RandomFloat(1, 3) * 0.09375 -- Last Number
-            self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Effect05/Cluster01Effect05_proj.bp', x, RandomFloat(outer_lower_height, outer_upper_height), z, x, 0, z)
-                :SetVelocity(x * velocity, 0, z * velocity)
+            self:CreateProjectile('/mods/BlackOpsFAF-ACUs/effects/Entities/Cluster01Effect05/Cluster01Effect05_proj.bp', x, RandomFloat(outer_lower_height, outer_upper_height), z, x, 0, z):SetVelocity(x * velocity, 0, z * velocity)
         end
     end,
 }
